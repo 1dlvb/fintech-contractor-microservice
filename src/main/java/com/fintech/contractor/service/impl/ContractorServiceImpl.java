@@ -1,5 +1,7 @@
 package com.fintech.contractor.service.impl;
 
+import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Contractor;
 import com.fintech.contractor.repository.ContractorRepository;
 import com.fintech.contractor.service.ContractorService;
@@ -7,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,32 +20,48 @@ public class ContractorServiceImpl implements ContractorService {
 
     @NonNull
     private final ContractorRepository contractorRepository;
+    @NonNull
+    private final ModelMapper modelMapper;
 
-    public Contractor saveOrUpdateContractor(Contractor contractor) {
+    public ContractorDTO saveOrUpdateContractor(ContractorDTO contractorDTO) {
+        Contractor contractor = modelMapper.map(contractorDTO, Contractor.class);
         if (contractor.getId() != null && contractorRepository.existsById(contractor.getId())) {
             Contractor existingContractor = contractorRepository.findById(contractor.getId()).orElse(null);
             if (existingContractor != null) {
                 updateProperties(existingContractor, contractor);
-                return contractorRepository.save(existingContractor);
+                contractor = contractorRepository.save(existingContractor);
             }
+        } else {
+            contractor = contractorRepository.save(contractor);
         }
-        return contractorRepository.save(contractor);
+        return modelMapper.map(contractor, ContractorDTO.class);
     }
 
     @Override
-    public Contractor findContractorById(String id) {
-        Optional<Contractor> contractor = contractorRepository.findById(id);
-        return contractor.orElseThrow(() ->
+    public ContractorDTO findContractorById(String id) throws NotActiveException {
+        Optional<Contractor> contractorOptional = contractorRepository.findById(id);
+        Contractor contractor = contractorOptional.orElseThrow(() ->
                 new EntityNotFoundException("Contractor not found for ID: " + id));
+
+        if (contractor.getIsActive()) {
+            return modelMapper.map(contractor, ContractorDTO.class);
+        } else {
+            throw new NotActiveException("Contractor is not active");
+        }
     }
 
     @Override
     @Transactional
-    public void deleteContractor(String id) {
-        Contractor contractor = contractorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Contractor not found for ID: " + id));
-        contractor.setIsActive(false);
-        contractorRepository.save(contractor);
+    public void deleteContractor(String id) throws NotActiveException {
+        Optional<Contractor> contractorOptional = contractorRepository.findById(id);
+        Contractor contractor = contractorOptional.orElseThrow(() ->
+                new EntityNotFoundException("Contractor not found for ID: " + id));
+        if (contractor.getIsActive()) {
+            contractor.setIsActive(false);
+            contractorRepository.save(contractor);
+        } else {
+            throw new NotActiveException("Contractor is not active");
+        }
     }
 
     private void updateProperties(Contractor existingContractor, Contractor newContractorData) {

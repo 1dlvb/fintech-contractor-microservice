@@ -1,7 +1,9 @@
 package com.fintech.contractor.controller;
 
-import com.fintech.contractor.model.Contractor;
+import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.service.ContractorService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +23,29 @@ public class ContractorController {
     @NonNull
     private final ContractorService contractorService;
     @PutMapping("/save")
-    public ResponseEntity<Contractor> saveOrUpdateContractor(@RequestBody Contractor contractor) {
-        Contractor savedContractor = contractorService.saveOrUpdateContractor(contractor);
-        return ResponseEntity.ok(savedContractor);
+    public ResponseEntity<ContractorDTO> saveOrUpdateContractor(@RequestBody ContractorDTO contractorDTO) {
+        ContractorDTO savedContractorDTO = contractorService.saveOrUpdateContractor(contractorDTO);
+        return ResponseEntity.ok(savedContractorDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contractor> findContractorById(@PathVariable String id) {
-        Contractor contractor = contractorService.findContractorById(id);
-        return ResponseEntity.ok(contractor);
+    public ResponseEntity<ContractorDTO> findContractorById(@PathVariable String id) {
+        try {
+            ContractorDTO contractorDTO = contractorService.findContractorById(id);
+            return ResponseEntity.ok(contractorDTO);
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteContractor(@PathVariable String id) {
-        contractorService.deleteContractor(id);
-        return ResponseEntity.noContent().build();
+        try {
+            contractorService.deleteContractor(id);
+            return ResponseEntity.noContent().build();
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

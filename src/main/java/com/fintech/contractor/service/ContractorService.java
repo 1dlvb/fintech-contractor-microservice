@@ -1,13 +1,14 @@
 package com.fintech.contractor.service;
 
-import com.fintech.contractor.model.Contractor;
+import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.exception.NotActiveException;
 
 public interface ContractorService {
 
-    Contractor saveOrUpdateContractor(Contractor contractor);
+    ContractorDTO saveOrUpdateContractor(ContractorDTO contractorDTO);
 
-    Contractor findContractorById(String id);
+    ContractorDTO findContractorById(String id) throws NotActiveException;
 
-    void deleteContractor(String id);
+    void deleteContractor(String id) throws NotActiveException;
 
 }
