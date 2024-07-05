@@ -16,13 +16,13 @@ import lombok.NoArgsConstructor;
 public class Industry {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, name = "is_active", columnDefinition = "boolean default true")
-    private Boolean isActive;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
 }

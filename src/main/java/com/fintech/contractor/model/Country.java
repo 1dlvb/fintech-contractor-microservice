@@ -20,7 +20,7 @@ public class Country {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "is_active", columnDefinition = "boolean default true", nullable = false)
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
 }
