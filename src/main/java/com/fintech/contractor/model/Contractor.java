@@ -2,6 +2,8 @@ package com.fintech.contractor.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
 public class Contractor {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private String id;
 
@@ -72,7 +75,7 @@ public class Contractor {
     @Column(name = "modify_user_id")
     private String modifyUserId;
 
-    @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean isActive;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
 }
