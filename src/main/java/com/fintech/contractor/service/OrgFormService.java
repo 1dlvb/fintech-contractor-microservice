@@ -1,17 +1,18 @@
 package com.fintech.contractor.service;
 
-import com.fintech.contractor.model.OrgForm;
+import com.fintech.contractor.dto.OrgFormDTO;
+import com.fintech.contractor.exception.NotActiveException;
 
 import java.util.List;
 
 public interface OrgFormService {
 
-    List<OrgForm> fetchAllOrgForms();
+    List<OrgFormDTO> fetchAllOrgForms();
 
-    OrgForm saveOrUpdateOrgForm(OrgForm orgForm);
+    OrgFormDTO saveOrUpdateOrgForm(OrgFormDTO orgForm);
 
-    OrgForm findOrgFormById(Long id);
+    OrgFormDTO findOrgFormById(Long id) throws NotActiveException;
 
-    void deleteOrgForm(Long id);
+    void deleteOrgForm(Long id) throws NotActiveException;
 
 }

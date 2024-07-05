@@ -1,7 +1,9 @@
 package com.fintech.contractor.controller;
 
-import com.fintech.contractor.model.Industry;
+import com.fintech.contractor.dto.IndustryDTO;
+import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.service.IndustryService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +25,34 @@ public class IndustryController {
     @NonNull
     private final IndustryService industryService;
     @PutMapping("/save")
-    public ResponseEntity<Industry> saveOrUpdateIndustry(@RequestBody Industry industry) {
-        Industry savedIndustry = industryService.saveOrUpdateIndustry(industry);
-        return ResponseEntity.ok(savedIndustry);
+    public ResponseEntity<IndustryDTO> saveOrUpdateIndustry(@RequestBody IndustryDTO industryDTO) {
+        IndustryDTO savedIndustryDTO = industryService.saveOrUpdateIndustry(industryDTO);
+        return ResponseEntity.ok(savedIndustryDTO);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Industry>> fetchAllIndustries() {
+    public ResponseEntity<List<IndustryDTO>> fetchAllCountries() {
         return ResponseEntity.ok(industryService.fetchAllIndustries());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Industry> findIndustryById(@PathVariable Long id) {
-        Industry industry = industryService.findIndustryById(id);
-        return ResponseEntity.ok(industry);
+    public ResponseEntity<IndustryDTO> findIndustryById(@PathVariable Long id) {
+        try {
+            IndustryDTO industryDTO = industryService.findIndustryById(id);
+            return ResponseEntity.ok(industryDTO);
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteIndustry(@PathVariable Long id) {
-        industryService.deleteIndustry(id);
-        return ResponseEntity.noContent().build();
+        try {
+            industryService.deleteIndustry(id);
+            return ResponseEntity.noContent().build();
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

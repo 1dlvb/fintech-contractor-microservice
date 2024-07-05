@@ -1,7 +1,9 @@
 package com.fintech.contractor.controller;
 
-import com.fintech.contractor.model.Country;
+import com.fintech.contractor.dto.CountryDTO;
+import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.service.CountryService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +25,34 @@ public class CountryController {
     @NonNull
     private final CountryService countryService;
     @PutMapping("/save")
-    public ResponseEntity<Country> saveOrUpdateCountry(@RequestBody Country country) {
-        Country savedCountry = countryService.saveOrUpdateCountry(country);
-        return ResponseEntity.ok(savedCountry);
+    public ResponseEntity<CountryDTO> saveOrUpdateCountry(@RequestBody CountryDTO countryDTO) {
+        CountryDTO savedCountryDTO = countryService.saveOrUpdateCountry(countryDTO);
+        return ResponseEntity.ok(savedCountryDTO);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Country>> fetchAllCountries() {
+    public ResponseEntity<List<CountryDTO>> fetchAllCountries() {
         return ResponseEntity.ok(countryService.fetchAllCountries());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Country> findCountryById(@PathVariable String id) {
-        Country country = countryService.findCountryById(id);
-        return ResponseEntity.ok(country);
+    public ResponseEntity<CountryDTO> findCountryById(@PathVariable String id) {
+        try {
+            CountryDTO countryDTO = countryService.findCountryById(id);
+            return ResponseEntity.ok(countryDTO);
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCountry(@PathVariable String id) {
-        countryService.deleteCountry(id);
-        return ResponseEntity.noContent().build();
+        try {
+            countryService.deleteCountry(id);
+            return ResponseEntity.noContent().build();
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

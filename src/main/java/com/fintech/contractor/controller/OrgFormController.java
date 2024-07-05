@@ -1,7 +1,9 @@
 package com.fintech.contractor.controller;
 
-import com.fintech.contractor.model.OrgForm;
+import com.fintech.contractor.dto.OrgFormDTO;
+import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.service.OrgFormService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +25,34 @@ public class OrgFormController {
     @NonNull
     private final OrgFormService orgFormService;
     @PutMapping("/save")
-    public ResponseEntity<OrgForm> saveOrUpdateOrgForm(@RequestBody OrgForm orgForm) {
-        OrgForm savedOrgForm = orgFormService.saveOrUpdateOrgForm(orgForm);
-        return ResponseEntity.ok(savedOrgForm);
+    public ResponseEntity<OrgFormDTO> saveOrUpdateOrgForm(@RequestBody OrgFormDTO orgFormDTO) {
+        OrgFormDTO savedOrgFormDTO = orgFormService.saveOrUpdateOrgForm(orgFormDTO);
+        return ResponseEntity.ok(savedOrgFormDTO);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<OrgForm>> fetchAllOrgForms() {
+    public ResponseEntity<List<OrgFormDTO>> fetchAllCountries() {
         return ResponseEntity.ok(orgFormService.fetchAllOrgForms());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrgForm> findOrgFormById(@PathVariable Long id) {
-        OrgForm orgForm = orgFormService.findOrgFormById(id);
-        return ResponseEntity.ok(orgForm);
+    public ResponseEntity<OrgFormDTO> findOrgFormById(@PathVariable Long id) {
+        try {
+            OrgFormDTO orgFormDTO = orgFormService.findOrgFormById(id);
+            return ResponseEntity.ok(orgFormDTO);
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteOrgForm(@PathVariable Long id) {
-        orgFormService.deleteOrgForm(id);
-        return ResponseEntity.noContent().build();
+        try {
+            orgFormService.deleteOrgForm(id);
+            return ResponseEntity.noContent().build();
+        } catch (NotActiveException | EntityNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

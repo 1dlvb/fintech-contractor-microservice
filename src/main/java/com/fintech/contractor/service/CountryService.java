@@ -1,17 +1,18 @@
 package com.fintech.contractor.service;
 
-import com.fintech.contractor.model.Country;
+import com.fintech.contractor.dto.CountryDTO;
+import com.fintech.contractor.exception.NotActiveException;
 
 import java.util.List;
 
 public interface CountryService {
 
-    List<Country> fetchAllCountries();
+    List<CountryDTO> fetchAllCountries();
 
-    Country saveOrUpdateCountry(Country country);
+    CountryDTO saveOrUpdateCountry(CountryDTO countryDTO);
 
-    Country findCountryById(String id);
+    CountryDTO findCountryById(String id) throws NotActiveException;
 
-    void deleteCountry(String id);
+    void deleteCountry(String id) throws NotActiveException;
 
 }
