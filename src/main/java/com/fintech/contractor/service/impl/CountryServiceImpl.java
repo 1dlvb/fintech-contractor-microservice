@@ -21,9 +21,11 @@ public class CountryServiceImpl implements CountryService {
 
     @NonNull
     private final CountryRepository repository;
+
     @NonNull
     private final ModelMapper modelMapper;
 
+    @Override
     public List<CountryDTO> fetchAllCountries() {
         List<Country> countries = repository.findAll();
         return countries.stream()

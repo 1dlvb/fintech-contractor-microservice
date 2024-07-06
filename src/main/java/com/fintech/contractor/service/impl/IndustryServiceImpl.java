@@ -24,6 +24,7 @@ public class IndustryServiceImpl implements IndustryService {
 
     @NonNull
     private final ModelMapper modelMapper;
+
     @Override
     public List<IndustryDTO> fetchAllIndustries() {
         List<Industry> industries = repository.findAll();
