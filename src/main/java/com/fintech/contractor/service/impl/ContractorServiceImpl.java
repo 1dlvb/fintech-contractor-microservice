@@ -42,8 +42,8 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
-    public List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload) {
-        return sqlContractorRepository.findContractorByFilters(payload);
+    public List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload, Integer page, Integer size) {
+        return sqlContractorRepository.findContractorByFilters(payload, page, size);
     }
 
     @Override

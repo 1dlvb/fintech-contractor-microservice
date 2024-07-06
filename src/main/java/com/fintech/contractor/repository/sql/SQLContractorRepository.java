@@ -20,8 +20,10 @@ public class SQLContractorRepository {
     @NonNull
     private final JdbcTemplate jdbcTemplate;
 
-    public List<ContractorDTO> findContractorByFilters(SearchContractorPayload payload) {
+    public List<ContractorDTO> findContractorByFilters(SearchContractorPayload payload, Integer page, Integer size) {
         List<Object> params = new ArrayList<>();
+        Integer offset = page * size;
+
         StringBuilder sqlBuilder = new StringBuilder(
                 "SELECT c.*, co.name as country_name, of.name as org_form_name, i.name as industry_name FROM contractor c " +
                 "JOIN country co ON c.country = co.id " +
@@ -72,6 +74,10 @@ public class SQLContractorRepository {
                 params.add(industry.getName());
             }
         }
+
+        sqlBuilder.append(" LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add(offset);
 
         String sql = sqlBuilder.toString();
         return jdbcTemplate.query(sql, rowMapper(), params.toArray());

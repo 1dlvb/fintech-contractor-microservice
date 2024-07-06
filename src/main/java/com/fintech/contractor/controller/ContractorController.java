@@ -66,8 +66,10 @@ public class ContractorController {
 
     @GetMapping("/search/sql")
     public ResponseEntity<List<ContractorDTO>> getContractorsSQL(
-            SearchContractorPayload payload) {
-        return ResponseEntity.ok(contractorService.findContractorsSQL(payload));
+            SearchContractorPayload payload,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(contractorService.findContractorsSQL(payload, page, size));
 
     }
 

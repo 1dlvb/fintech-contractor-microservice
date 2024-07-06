@@ -11,7 +11,7 @@ public interface ContractorService {
 
     List<ContractorDTO> findContractors(SearchContractorPayload payload, Pageable pageable);
 
-    List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload);
+    List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload, Integer page, Integer size);
 
     ContractorDTO saveOrUpdateContractor(ContractorDTO contractorDTO);
 
