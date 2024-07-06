@@ -2,6 +2,7 @@ package com.fintech.contractor.controller;
 
 import com.fintech.contractor.dto.ContractorDTO;
 import com.fintech.contractor.exception.NotActiveException;
+import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.service.ContractorService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/contractor")
@@ -46,6 +49,13 @@ public class ContractorController {
         } catch (NotActiveException | EntityNotFoundException exception) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ContractorDTO>> getContractors(
+            SearchContractorPayload payload) {
+        return ResponseEntity.ok(contractorService.findContractors(payload));
+
     }
 
 }

@@ -3,16 +3,23 @@ package com.fintech.contractor.service.impl;
 import com.fintech.contractor.dto.ContractorDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Contractor;
+import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.repository.ContractorRepository;
+import com.fintech.contractor.repository.specification.ContractorSpecification;
 import com.fintech.contractor.service.ContractorService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +30,14 @@ public class ContractorServiceImpl implements ContractorService {
     @NonNull
     private final ModelMapper modelMapper;
 
+    @Override
+    public List<ContractorDTO> findContractors(SearchContractorPayload payload) {
+        Specification<Contractor> spec = ContractorSpecification.findContractorBySpecifications(payload);
+        List<Contractor> contractors = contractorRepository.findAll(spec);
+        return contractors.stream().map(contractor -> modelMapper.map(contractor, ContractorDTO.class)).toList();
+    }
+
+    @Override
     public ContractorDTO saveOrUpdateContractor(ContractorDTO contractorDTO) {
         Contractor contractor = modelMapper.map(contractorDTO, Contractor.class);
         if (contractor.getId() != null && contractorRepository.existsById(contractor.getId())) {
