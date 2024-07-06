@@ -5,6 +5,7 @@ import com.fintech.contractor.model.Country;
 import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.payload.SearchContractorPayload;
+import com.fintech.contractor.util.WildcatEnhancer;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -41,19 +42,19 @@ public final class ContractorSpecification {
             if (payload.country() != null) {
                 Join<Contractor, Country> countryJoin = root.join("country", JoinType.LEFT);
                 predicates.add(criteriaBuilder.like(countryJoin.get("name"),
-                        enhanceWithWildcatMatching(payload.country())));
+                        WildcatEnhancer.enhanceWithWildcatMatching(payload.country())));
             }
 
             if (payload.industry() != null) {
                 Join<Contractor, Industry> industryJoin = root.join("industry");
                 predicates.add(criteriaBuilder.equal(industryJoin.get("id"), payload.industry().getId()));
-                predicates.add(criteriaBuilder.equal(industryJoin.get("name"), payload.industry().getId()));
+                predicates.add(criteriaBuilder.equal(industryJoin.get("name"), payload.industry().getName()));
             }
 
             if (payload.orgForm() != null) {
                 Join<Contractor, OrgForm> orgFormJoin = root.join("orgForm");
                 predicates.add(criteriaBuilder.like(orgFormJoin.get("name"),
-                        enhanceWithWildcatMatching(payload.orgForm())));
+                        WildcatEnhancer.enhanceWithWildcatMatching(payload.orgForm())));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -65,11 +66,7 @@ public final class ContractorSpecification {
     }
 
     private static Predicate createLikePredicate(CriteriaBuilder cb, Root<Contractor> root, String fieldName, String value) {
-        return value != null ? cb.like(root.get(fieldName), enhanceWithWildcatMatching(value)) : null;
-    }
-
-    private static String enhanceWithWildcatMatching(String string) {
-        return String.format("%%%s%%", string);
+        return value != null ? cb.like(root.get(fieldName), WildcatEnhancer.enhanceWithWildcatMatching(value)) : null;
     }
 
 }
