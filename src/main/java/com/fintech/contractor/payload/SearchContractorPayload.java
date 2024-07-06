@@ -8,7 +8,7 @@ public record SearchContractorPayload(String id,
                                       String nameFull,
                                       String inn,
                                       String ogrn,
-                                      String countryName,
+                                      String country,
                                       IndustryDTO industry,
-                                      String orgFormName) {
+                                      String orgForm) {
 }
