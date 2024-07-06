@@ -1,6 +1,7 @@
 package com.fintech.contractor;
 
 import com.fintech.contractor.auditor.AuditorAware;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,6 +35,11 @@ public class ContractorApplication {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+
+    @Bean
+    public Dotenv dotenv() {
+        return Dotenv.configure().load();
     }
 
 }
