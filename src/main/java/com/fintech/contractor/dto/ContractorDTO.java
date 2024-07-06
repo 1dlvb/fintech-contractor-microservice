@@ -2,7 +2,6 @@ package com.fintech.contractor.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fintech.contractor.model.Contractor;
 import lombok.Data;
 
 @Data
@@ -13,7 +12,7 @@ public class ContractorDTO {
     private String id;
 
     @JsonProperty("parent_id")
-    private Contractor parent;
+    private String parentId;
 
     @JsonProperty("name")
     private String name;

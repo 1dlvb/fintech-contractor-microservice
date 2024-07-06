@@ -44,9 +44,8 @@ public class Contractor {
     @Column(name = "ogrn")
     private String ogrn;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Contractor parent;
+    @Column(name = "parent_id")
+    private String parent;
 
     @ManyToOne
     @JoinColumn(name = "country")
