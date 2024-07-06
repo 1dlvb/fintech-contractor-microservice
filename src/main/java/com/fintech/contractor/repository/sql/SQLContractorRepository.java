@@ -26,32 +26,32 @@ public class SQLContractorRepository {
 
         StringBuilder sqlBuilder = new StringBuilder(
                 "SELECT c.*, co.name as country_name, of.name as org_form_name, i.name as industry_name FROM contractor c " +
-                "JOIN country co ON c.country = co.id " +
-                "JOIN org_form of ON c.org_form = of.id " +
-                "JOIN industry i ON c.industry = i.id WHERE 1=1"
+                        "JOIN country co ON c.country = co.id " +
+                        "JOIN org_form of ON c.org_form = of.id " +
+                        "JOIN industry i ON c.industry = i.id WHERE c.is_active = true"
         );
         if (payload.id() != null) {
-            sqlBuilder.append(" AND id = ?");
+            sqlBuilder.append(" AND c.id = ?");
             params.add(payload.id());
         }
         if (payload.parentId() != null) {
-            sqlBuilder.append(" AND parent_id = ?");
+            sqlBuilder.append(" AND c.parent_id = ?");
             params.add(payload.parentId());
         }
         if (payload.name() != null) {
-            sqlBuilder.append(" AND name LIKE ?");
+            sqlBuilder.append(" AND c.name LIKE ?");
             params.add(WildcatEnhancer.enhanceWithWildcatMatching(payload.name()));
         }
         if (payload.nameFull() != null) {
-            sqlBuilder.append(" AND name_full LIKE ?");
+            sqlBuilder.append(" AND c.name_full LIKE ?");
             params.add(WildcatEnhancer.enhanceWithWildcatMatching(payload.nameFull()));
         }
         if (payload.inn() != null) {
-            sqlBuilder.append(" AND inn LIKE ?");
+            sqlBuilder.append(" AND c.inn LIKE ?");
             params.add(WildcatEnhancer.enhanceWithWildcatMatching(payload.inn()));
         }
         if (payload.ogrn() != null) {
-            sqlBuilder.append(" AND ogrn LIKE ?");
+            sqlBuilder.append(" AND c.ogrn LIKE ?");
             params.add(WildcatEnhancer.enhanceWithWildcatMatching(payload.ogrn()));
         }
 
