@@ -21,7 +21,7 @@ public final class ContractorSpecification {
 
     private ContractorSpecification() {}
 
-    public static Specification<Contractor> findContractorBySpecifications(SearchContractorPayload payload) {
+    public static Specification<Contractor> findContractorsBySpecifications(SearchContractorPayload payload) {
         return (root, query, criteriaBuilder) -> {
             Stream<Predicate> predicateStream = Stream.of(
                     criteriaBuilder.isTrue(root.get("isActive")),
