@@ -31,9 +31,9 @@ public class ContractorServiceImpl implements ContractorService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<ContractorDTO> findContractors(SearchContractorPayload payload) {
+    public List<ContractorDTO> findContractors(SearchContractorPayload payload, Pageable pageable) {
         Specification<Contractor> spec = ContractorSpecification.findContractorBySpecifications(payload);
-        List<Contractor> contractors = contractorRepository.findAll(spec);
+        Page<Contractor> contractors = contractorRepository.findAll(spec, pageable);
         return contractors.stream().map(contractor -> modelMapper.map(contractor, ContractorDTO.class)).toList();
     }
 
