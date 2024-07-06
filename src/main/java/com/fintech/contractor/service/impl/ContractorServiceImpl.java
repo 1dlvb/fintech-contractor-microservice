@@ -6,6 +6,7 @@ import com.fintech.contractor.model.Contractor;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.repository.ContractorRepository;
 import com.fintech.contractor.repository.specification.ContractorSpecification;
+import com.fintech.contractor.repository.sql.SQLContractorRepository;
 import com.fintech.contractor.service.ContractorService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,10 @@ public class ContractorServiceImpl implements ContractorService {
 
     @NonNull
     private final ContractorRepository contractorRepository;
+
+    @NonNull
+    private final SQLContractorRepository sqlContractorRepository;
+
     @NonNull
     private final ModelMapper modelMapper;
 
@@ -34,6 +39,11 @@ public class ContractorServiceImpl implements ContractorService {
         Specification<Contractor> spec = ContractorSpecification.findContractorsBySpecifications(payload);
         Page<Contractor> contractors = contractorRepository.findAll(spec, pageable);
         return contractors.stream().map(contractor -> modelMapper.map(contractor, ContractorDTO.class)).toList();
+    }
+
+    @Override
+    public List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload) {
+        return sqlContractorRepository.findContractorByFilters(payload);
     }
 
     @Override

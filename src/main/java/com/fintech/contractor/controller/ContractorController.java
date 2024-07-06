@@ -64,4 +64,11 @@ public class ContractorController {
 
     }
 
+    @GetMapping("/search/sql")
+    public ResponseEntity<List<ContractorDTO>> getContractorsSQL(
+            SearchContractorPayload payload) {
+        return ResponseEntity.ok(contractorService.findContractorsSQL(payload));
+
+    }
+
 }

@@ -11,6 +11,8 @@ public interface ContractorService {
 
     List<ContractorDTO> findContractors(SearchContractorPayload payload, Pageable pageable);
 
+    List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload);
+
     ContractorDTO saveOrUpdateContractor(ContractorDTO contractorDTO);
 
     ContractorDTO findContractorById(String id) throws NotActiveException;
