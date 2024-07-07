@@ -8,6 +8,8 @@ import com.fintech.contractor.repository.ContractorRepository;
 import com.fintech.contractor.repository.specification.ContractorSpecification;
 import com.fintech.contractor.repository.sql.SQLContractorRepository;
 import com.fintech.contractor.service.ContractorService;
+import com.onedlvb.advice.LogLevel;
+import com.onedlvb.advice.annotation.AuditLog;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -35,6 +37,7 @@ public class ContractorServiceImpl implements ContractorService {
     private final ModelMapper modelMapper;
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public List<ContractorDTO> findContractors(SearchContractorPayload payload, Pageable pageable) {
         Specification<Contractor> spec = ContractorSpecification.findContractorsBySpecifications(payload);
         Page<Contractor> contractors = contractorRepository.findAll(spec, pageable);
@@ -42,11 +45,13 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public List<ContractorDTO> findContractorsSQL(SearchContractorPayload payload, Integer page, Integer size) {
         return sqlContractorRepository.findContractorByFilters(payload, page, size);
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public ContractorDTO saveOrUpdateContractor(ContractorDTO contractorDTO) {
         Contractor contractor = modelMapper.map(contractorDTO, Contractor.class);
         if (contractor.getId() != null && contractorRepository.existsById(contractor.getId())) {
@@ -62,6 +67,7 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public ContractorDTO findContractorById(String id) throws NotActiveException {
         Optional<Contractor> contractorOptional = contractorRepository.findById(id);
         Contractor contractor = contractorOptional.orElseThrow(() ->
@@ -76,6 +82,7 @@ public class ContractorServiceImpl implements ContractorService {
 
     @Override
     @Transactional
+    @AuditLog(logLevel = LogLevel.INFO)
     public void deleteContractor(String id) throws NotActiveException {
         Optional<Contractor> contractorOptional = contractorRepository.findById(id);
         Contractor contractor = contractorOptional.orElseThrow(() ->

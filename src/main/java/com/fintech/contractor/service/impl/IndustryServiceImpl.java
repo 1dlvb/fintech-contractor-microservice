@@ -5,6 +5,8 @@ import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.repository.IndustryRepository;
 import com.fintech.contractor.service.IndustryService;
+import com.onedlvb.advice.LogLevel;
+import com.onedlvb.advice.annotation.AuditLog;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class IndustryServiceImpl implements IndustryService {
     private final ModelMapper modelMapper;
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public List<IndustryDTO> fetchAllIndustries() {
         List<Industry> industries = repository.findAll();
         return industries.stream()
@@ -34,6 +37,7 @@ public class IndustryServiceImpl implements IndustryService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public IndustryDTO saveOrUpdateIndustry(IndustryDTO industryDTO) {
         Industry industry = modelMapper.map(industryDTO, Industry.class);
         if (industry.getId() != null && repository.existsById(industry.getId())) {
@@ -49,6 +53,7 @@ public class IndustryServiceImpl implements IndustryService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public IndustryDTO findIndustryById(Long id) throws NotActiveException {
         Optional<Industry> industryOptional = repository.findById(id);
         Industry industry = industryOptional.orElseThrow(() ->
@@ -62,6 +67,7 @@ public class IndustryServiceImpl implements IndustryService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public void deleteIndustry(Long id) throws NotActiveException {
         Optional<Industry> industryOptional = repository.findById(id);
         Industry industry = industryOptional.orElseThrow(() ->

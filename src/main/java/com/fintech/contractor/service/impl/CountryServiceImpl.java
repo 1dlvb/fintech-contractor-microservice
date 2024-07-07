@@ -5,6 +5,8 @@ import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Country;
 import com.fintech.contractor.repository.CountryRepository;
 import com.fintech.contractor.service.CountryService;
+import com.onedlvb.advice.LogLevel;
+import com.onedlvb.advice.annotation.AuditLog;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class CountryServiceImpl implements CountryService {
     private final ModelMapper modelMapper;
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public List<CountryDTO> fetchAllCountries() {
         List<Country> countries = repository.findAll();
         return countries.stream()
@@ -34,6 +37,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public CountryDTO saveOrUpdateCountry(CountryDTO countryDTO) {
         Country country = modelMapper.map(countryDTO, Country.class);
         if (country.getId() != null && repository.existsById(country.getId())) {
@@ -49,6 +53,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public CountryDTO findCountryById(String id) throws NotActiveException {
         Optional<Country> countryOptional = repository.findById(id);
         Country country = countryOptional.orElseThrow(() ->
@@ -62,6 +67,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public void deleteCountry(String id) throws NotActiveException {
         Optional<Country> countryOptional = repository.findById(id);
         Country country = countryOptional.orElseThrow(() ->

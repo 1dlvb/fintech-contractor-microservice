@@ -5,6 +5,8 @@ import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.repository.OrgFormRepository;
 import com.fintech.contractor.service.OrgFormService;
+import com.onedlvb.advice.LogLevel;
+import com.onedlvb.advice.annotation.AuditLog;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class OrgFormServiceImpl implements OrgFormService {
     private final ModelMapper modelMapper;
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public List<OrgFormDTO> fetchAllOrgForms() {
         List<OrgForm> industries = repository.findAll();
         return industries.stream()
@@ -34,6 +37,7 @@ public class OrgFormServiceImpl implements OrgFormService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public OrgFormDTO saveOrUpdateOrgForm(OrgFormDTO orgFormDTO) {
         OrgForm orgForm = modelMapper.map(orgFormDTO, OrgForm.class);
         if (orgForm.getId() != null && repository.existsById(orgForm.getId())) {
@@ -49,6 +53,7 @@ public class OrgFormServiceImpl implements OrgFormService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public OrgFormDTO findOrgFormById(Long id) throws NotActiveException {
         Optional<OrgForm> orgFormOptional = repository.findById(id);
         OrgForm orgForm = orgFormOptional.orElseThrow(() ->
@@ -62,6 +67,7 @@ public class OrgFormServiceImpl implements OrgFormService {
     }
 
     @Override
+    @AuditLog(logLevel = LogLevel.INFO)
     public void deleteOrgForm(Long id) throws NotActiveException {
         Optional<OrgForm> orgFormOptional = repository.findById(id);
         OrgForm orgForm = orgFormOptional.orElseThrow(() ->

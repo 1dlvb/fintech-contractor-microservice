@@ -4,6 +4,8 @@ import com.fintech.contractor.dto.ContractorDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.service.ContractorService;
+import com.onedlvb.advice.LogLevel;
+import com.onedlvb.advice.annotation.AuditLogHttp;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +31,14 @@ public class ContractorController {
     @NonNull
     private final ContractorService contractorService;
     @PutMapping("/save")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<ContractorDTO> saveOrUpdateContractor(@RequestBody ContractorDTO contractorDTO) {
         ContractorDTO savedContractorDTO = contractorService.saveOrUpdateContractor(contractorDTO);
         return ResponseEntity.ok(savedContractorDTO);
     }
 
     @GetMapping("/{id}")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<ContractorDTO> findContractorById(@PathVariable String id) {
         try {
             ContractorDTO contractorDTO = contractorService.findContractorById(id);
@@ -45,6 +49,7 @@ public class ContractorController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<Void> deleteContractor(@PathVariable String id) {
         try {
             contractorService.deleteContractor(id);
@@ -55,6 +60,7 @@ public class ContractorController {
     }
 
     @GetMapping("/search")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<ContractorDTO>> getContractors(
             SearchContractorPayload payload,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -65,6 +71,7 @@ public class ContractorController {
     }
 
     @GetMapping("/search/sql")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<ContractorDTO>> getContractorsSQL(
             SearchContractorPayload payload,
             @RequestParam(name = "page", defaultValue = "0") Integer page,

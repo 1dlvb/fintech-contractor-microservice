@@ -3,6 +3,8 @@ package com.fintech.contractor.controller;
 import com.fintech.contractor.dto.OrgFormDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.service.OrgFormService;
+import com.onedlvb.advice.LogLevel;
+import com.onedlvb.advice.annotation.AuditLogHttp;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +27,20 @@ public class OrgFormController {
     @NonNull
     private final OrgFormService orgFormService;
     @PutMapping("/save")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<OrgFormDTO> saveOrUpdateOrgForm(@RequestBody OrgFormDTO orgFormDTO) {
         OrgFormDTO savedOrgFormDTO = orgFormService.saveOrUpdateOrgForm(orgFormDTO);
         return ResponseEntity.ok(savedOrgFormDTO);
     }
 
     @GetMapping("/all")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<OrgFormDTO>> fetchAllCountries() {
         return ResponseEntity.ok(orgFormService.fetchAllOrgForms());
     }
 
     @GetMapping("/{id}")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<OrgFormDTO> findOrgFormById(@PathVariable Long id) {
         try {
             OrgFormDTO orgFormDTO = orgFormService.findOrgFormById(id);
@@ -46,6 +51,7 @@ public class OrgFormController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<Void> deleteOrgForm(@PathVariable Long id) {
         try {
             orgFormService.deleteOrgForm(id);
