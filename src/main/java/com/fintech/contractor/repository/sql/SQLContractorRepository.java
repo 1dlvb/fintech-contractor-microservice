@@ -113,8 +113,8 @@ public class SQLContractorRepository {
             }
             if (industry.getName() != null) {
                 String nameParamName = "industry_name";
-                sb.append(" AND i.name LIKE :").append(nameParamName);
-                params.addValue(nameParamName, "%" + industry.getName() + "%");
+                sb.append(" AND i.name = :").append(nameParamName);
+                params.addValue(nameParamName, industry.getName());
             }
         }
     }
