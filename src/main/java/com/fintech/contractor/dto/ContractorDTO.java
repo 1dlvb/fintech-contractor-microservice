@@ -2,17 +2,23 @@ package com.fintech.contractor.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @JsonPropertyOrder({ "id", "parent_id", "name", "name_full", "inn", "ogrn", "country", "industry", "org_form" })
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ContractorDTO {
 
     @JsonProperty("id")
     private String id;
 
     @JsonProperty("parent_id")
-    private String parentId;
+    private String parent;
 
     @JsonProperty("name")
     private String name;
