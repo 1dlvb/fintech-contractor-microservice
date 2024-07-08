@@ -8,10 +8,10 @@ import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.util.WildcatEnhancer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 public class SQLContractorRepository {
 
     @NonNull
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private static final String INITIAL_SQL =  "SELECT c.*, co.name as country_name, of.name as org_form_name, i.name as industry_name " +
             "FROM contractor c " +
             "JOIN country co ON c.country = co.id " +
@@ -39,12 +39,12 @@ public class SQLContractorRepository {
      * @return A list of {@link ContractorDTO} objects that match the search criteria.
      */
     public List<ContractorDTO> findContractorByFilters(SearchContractorPayload payload, Integer page, Integer size) {
-        List<Object> params = new ArrayList<>();
+        MapSqlParameterSource params = new MapSqlParameterSource();
         Integer offset = page * size;
 
         StringBuilder sqlBuilder = new StringBuilder(INITIAL_SQL);
 
-        List<BiConsumer<SearchContractorPayload, List<Object>>> filters = List.of(
+        List<BiConsumer<SearchContractorPayload, MapSqlParameterSource>> filters = List.of(
                 (p, ps) -> addEqualCondition(p.id(), sqlBuilder, "c.id", ps),
                 (p, ps) -> addEqualCondition(p.parentId(), sqlBuilder, "c.parent_id", ps),
                 (p, ps) -> addLikeCondition(p.name(), sqlBuilder, "c.name", ps),
@@ -56,16 +56,15 @@ public class SQLContractorRepository {
                 (p, ps) -> addIndustryCondition(p.industry(), sqlBuilder, ps)
         );
 
-        for (BiConsumer<SearchContractorPayload, List<Object>> filter : filters) {
+        for (BiConsumer<SearchContractorPayload, MapSqlParameterSource> filter : filters) {
             filter.accept(payload, params);
         }
 
-        sqlBuilder.append(" LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add(offset);
+        sqlBuilder.append(" LIMIT :size OFFSET :offset");
+        params.addValue("size", size);
+        params.addValue("offset", offset);
 
-        String sql = sqlBuilder.toString();
-        return jdbcTemplate.query(sql, rowMapper(), params.toArray());
+        return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
     }
 
     /**
@@ -75,10 +74,10 @@ public class SQLContractorRepository {
      * @param column  The column name in the database.
      * @param params  The list of parameters to bind to the SQL query.
      */
-    private <T> void addEqualCondition(T value, StringBuilder sb, String column, List<Object> params) {
+    private <T> void addEqualCondition(T value, StringBuilder sb, String column, MapSqlParameterSource params) {
         if (value != null) {
-            sb.append(" AND ").append(column).append(" = ?");
-            params.add(value);
+            sb.append(" AND ").append(column).append(" = :").append(column.replace(".", "_"));
+            params.addValue(column.replace(".", "_"), value);
         }
     }
 
@@ -90,10 +89,11 @@ public class SQLContractorRepository {
      * @param column  The column name in the database.
      * @param params  The list of parameters to bind to the SQL query.
      */
-    private void addLikeCondition(String value, StringBuilder sb, String column, List<Object> params) {
+    private void addLikeCondition(String value, StringBuilder sb, String column, MapSqlParameterSource params) {
         if (value != null) {
-            sb.append(" AND ").append(column).append(" LIKE ?");
-            params.add(WildcatEnhancer.enhanceWithWildcatMatching(value));
+            String paramName = column.replace(".", "_") + "_like";
+            sb.append(" AND ").append(column).append(" LIKE :").append(paramName);
+            params.addValue(paramName, WildcatEnhancer.enhanceWithWildcatMatching(value));
         }
     }
 
@@ -104,15 +104,17 @@ public class SQLContractorRepository {
      * @param sb       The {@link StringBuilder} representing the SQL query.
      * @param params   The list of parameters to bind to the SQL query.
      */
-    private void addIndustryCondition(IndustryDTO industry, StringBuilder sb, List<Object> params) {
+    private void addIndustryCondition(IndustryDTO industry, StringBuilder sb, MapSqlParameterSource params) {
         if (industry != null) {
             if (industry.getId() != null) {
-                sb.append(" AND i.id = ?");
-                params.add(industry.getId());
+                String idParamName = "industry_id";
+                sb.append(" AND i.id = :").append(idParamName);
+                params.addValue(idParamName, industry.getId());
             }
             if (industry.getName() != null) {
-                sb.append(" AND i.name = ?");
-                params.add(industry.getName());
+                String nameParamName = "industry_name";
+                sb.append(" AND i.name LIKE :").append(nameParamName);
+                params.addValue(nameParamName, "%" + industry.getName() + "%");
             }
         }
     }
