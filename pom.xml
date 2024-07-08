@@ -122,6 +122,12 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.28.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
