@@ -10,6 +10,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity class representing an org form.
+ * This class maps to the "org form" table in the database.
+ * It includes basic information about an org form entity.
+ * @author Matushkin Anton
+ */
 @Data
 @Entity
 @NoArgsConstructor

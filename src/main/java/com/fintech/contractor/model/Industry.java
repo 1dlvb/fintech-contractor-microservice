@@ -10,6 +10,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity class representing an industry.
+ * This class maps to the "industry" table in the database.
+ * It includes basic information about an industry entity.
+ * @author Matushkin Anton
+ */
 @Data
 @Entity
 @NoArgsConstructor

@@ -4,7 +4,6 @@ import com.fintech.contractor.auditor.AuditorAware;
 import com.fintech.contractor.repository.sql.SQLContractorRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -13,6 +12,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration file for spring boot application
+ * @author Matushkin Anton
+ */
 @Configuration
 @EnableJpaRepositories(basePackages = "com.fintech.contractor.repository")
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
@@ -41,15 +44,6 @@ public class AppConfig {
     @Bean
     public SQLContractorRepository sqlContractorRepository(JdbcTemplate jdbcTemplate) {
         return new SQLContractorRepository(jdbcTemplate);
-    }
-
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .url("jdbc:postgresql://localhost:5432/test-db")
-                .username("test")
-                .password("test")
-                .driverClassName("org.postgresql.Driver")
-                .build();
     }
 
 }

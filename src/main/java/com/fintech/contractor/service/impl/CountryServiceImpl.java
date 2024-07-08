@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * An implementation of {@link CountryService}.
+ * @author Matushkin Anton
+ */
 @Service
 @RequiredArgsConstructor
 public class CountryServiceImpl implements CountryService {
@@ -80,6 +84,11 @@ public class CountryServiceImpl implements CountryService {
         }
     }
 
+    /**
+     * Updates the name of an existing country entity with new data.
+     * @param existingCountry the existing {@link Country} entity to update.
+     * @param newCountryData the new {@link Country} data containing the updated name.
+     */
     private void updateProperties(Country existingCountry, Country newCountryData) {
         existingCountry.setName(newCountryData.getName());
     }

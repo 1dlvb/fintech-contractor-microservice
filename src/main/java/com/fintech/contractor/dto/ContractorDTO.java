@@ -7,6 +7,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for representing a contractor.
+ * Contains basic information about a contractor entity.
+ * @author Matushkin Anton
+ * @see com.fintech.contractor.model.Contractor
+ */
 @Data
 @JsonPropertyOrder({ "id", "parent_id", "name", "name_full", "inn", "ogrn", "country", "industry", "org_form" })
 @Builder

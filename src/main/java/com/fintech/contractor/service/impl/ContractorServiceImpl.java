@@ -23,6 +23,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * An implementation of {@link ContractorService}.
+ * @author Matushkin Anton
+ */
 @Service
 @RequiredArgsConstructor
 public class ContractorServiceImpl implements ContractorService {
@@ -95,6 +99,11 @@ public class ContractorServiceImpl implements ContractorService {
         }
     }
 
+    /**
+     * Updates the properties of an existing contractor entity with new data.
+     * @param existingContractor the existing {@link Contractor} entity to update.
+     * @param newContractorData the new {@link Contractor} data containing updated values.
+     */
     private void updateProperties(Contractor existingContractor, Contractor newContractorData) {
         existingContractor.setParent(newContractorData.getParent());
         existingContractor.setName(newContractorData.getName());

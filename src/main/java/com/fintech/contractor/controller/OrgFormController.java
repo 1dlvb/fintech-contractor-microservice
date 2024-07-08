@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST Controller for managing org forms.
+ * @author Matushkin Anton
+ */
 @RestController
 @RequestMapping("/org_form")
 @RequiredArgsConstructor
@@ -26,6 +30,12 @@ public class OrgFormController {
 
     @NonNull
     private final OrgFormService orgFormService;
+
+    /**
+     * Saves or updates an org form.
+     * @param orgFormDTO ({@link OrgFormDTO}) the org form details to save or update.
+     * @return a {@link ResponseEntity} containing the saved org form details.
+     */
     @PutMapping("/save")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<OrgFormDTO> saveOrUpdateOrgForm(@RequestBody OrgFormDTO orgFormDTO) {
@@ -33,12 +43,22 @@ public class OrgFormController {
         return ResponseEntity.ok(savedOrgFormDTO);
     }
 
+    /**
+     * @return a {@link ResponseEntity} containing the list of all org forms.
+     * @see OrgFormDTO
+     */
     @GetMapping("/all")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<OrgFormDTO>> fetchAllCountries() {
         return ResponseEntity.ok(orgFormService.fetchAllOrgForms());
     }
 
+    /**
+     * Retrieves an org form by ID.
+     * @param id the ID of the org form.
+     * @return a {@link ResponseEntity} containing the org form details if found, otherwise a 404 response.
+     * @see OrgFormDTO
+     */
     @GetMapping("/{id}")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<OrgFormDTO> findOrgFormById(@PathVariable Long id) {
@@ -50,6 +70,12 @@ public class OrgFormController {
         }
     }
 
+    /**
+     * Deletes an org form by ID.
+     * @param id the ID of the org form to delete.
+     * @return a {@link ResponseEntity} with no content if the org form was successfully deleted, otherwise a 404 response.
+     * @see OrgFormDTO
+     */
     @DeleteMapping("/delete/{id}")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<Void> deleteOrgForm(@PathVariable Long id) {

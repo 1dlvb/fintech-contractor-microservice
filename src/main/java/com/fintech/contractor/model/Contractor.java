@@ -19,6 +19,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity class representing a contractor.
+ * This class maps to the "contractor" table in the database.
+ * It includes basic information about a contractor entity and audit-related fields.
+ * @author Matushkin Anton
+ */
 @Entity
 @Data
 @NoArgsConstructor

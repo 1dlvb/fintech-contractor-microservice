@@ -8,6 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity class representing a country.
+ * This class maps to the "country" table in the database.
+ * It includes basic information about a country entity.
+ * @author Matushkin Anton
+ */
 @Data
 @Entity
 @NoArgsConstructor

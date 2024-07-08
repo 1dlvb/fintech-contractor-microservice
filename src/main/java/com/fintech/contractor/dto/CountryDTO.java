@@ -5,6 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for representing a country.
+ * Contains basic information about a country entity.
+ * @author Matushkin Anton
+ * @see com.fintech.contractor.model.Country
+ */
 @Data
 @Builder
 @AllArgsConstructor
