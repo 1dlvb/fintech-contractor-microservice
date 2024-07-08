@@ -87,30 +87,21 @@ public class SQLContractorRepository {
 
     private RowMapper<ContractorDTO> rowMapper() {
         return (rs, rowNum) -> {
-            ContractorDTO contractorDTO = new ContractorDTO();
-            contractorDTO.setId(rs.getString("id"));
-            contractorDTO.setParentId(rs.getString("parent_id"));
-            contractorDTO.setName(rs.getString("name"));
-            contractorDTO.setNameFull(rs.getString("name_full"));
-            contractorDTO.setInn(rs.getString("inn"));
-            contractorDTO.setOgrn(rs.getString("ogrn"));
 
-            CountryDTO countryDTO = new CountryDTO();
-            countryDTO.setId(rs.getString("country"));
-            countryDTO.setName(rs.getString("country_name"));
-            contractorDTO.setCountry(countryDTO);
+            CountryDTO countryDTO = new CountryDTO(rs.getString("country"), rs.getString("country_name"));
+            OrgFormDTO orgFormDTO = new OrgFormDTO(rs.getLong("org_form"), rs.getString("org_form_name"));
+            IndustryDTO industryDTO = new IndustryDTO(rs.getLong("industry"), rs.getString("industry_name"));
 
-            OrgFormDTO orgFormDTO = new OrgFormDTO();
-            orgFormDTO.setId(rs.getLong("org_form"));
-            orgFormDTO.setName(rs.getString("org_form_name"));
-            contractorDTO.setOrgForm(orgFormDTO);
-
-            IndustryDTO industryDTO = new IndustryDTO();
-            industryDTO.setId(rs.getLong("industry"));
-            industryDTO.setName(rs.getString("industry_name"));
-            contractorDTO.setIndustry(industryDTO);
-
-            return contractorDTO;
+            return new ContractorDTO(
+                    rs.getString("id"),
+                    rs.getString("parent_id"),
+                    rs.getString("name"),
+                    rs.getString("name_full"),
+                    rs.getString("inn"),
+                    rs.getString("ogrn"),
+                    countryDTO,
+                    industryDTO,
+                    orgFormDTO);
         };
     }
 
