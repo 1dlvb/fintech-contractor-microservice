@@ -5,6 +5,14 @@ import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.service.CountryService;
 import com.onedlvb.advice.LogLevel;
 import com.onedlvb.advice.annotation.AuditLogHttp;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/country")
 @RequiredArgsConstructor
+@Tag(name = "Country API", description = "API for managing countries")
 public class CountryController {
 
     @NonNull
@@ -36,9 +45,14 @@ public class CountryController {
      * @param countryDTO ({@link CountryDTO}) the country details to save or update.
      * @return a {@link ResponseEntity} containing the saved country details.
      */
+    @Operation(summary = "Save or update country", description = "Saves or updates country details.")
+    @ApiResponse(responseCode = "200",
+            description = "Country saved",
+            content = @Content(schema = @Schema(implementation = CountryDTO.class)))
     @PutMapping("/save")
     @AuditLogHttp(logLevel = LogLevel.INFO)
-    public ResponseEntity<CountryDTO> saveOrUpdateCountry(@RequestBody CountryDTO countryDTO) {
+    public ResponseEntity<CountryDTO> saveOrUpdateCountry(
+            @RequestBody @Parameter(description = "Country details") CountryDTO countryDTO) {
         CountryDTO savedCountryDTO = countryService.saveOrUpdateCountry(countryDTO);
         return ResponseEntity.ok(savedCountryDTO);
     }
@@ -47,6 +61,12 @@ public class CountryController {
      * @return a {@link ResponseEntity} containing the list of all countries.
      * @see CountryDTO
      */
+    @Operation(summary = "Find all countries", description = "Retrieves all countries.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",
+                    description = "Countries found",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CountryDTO.class)))),
+    })
     @GetMapping("/all")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<CountryDTO>> fetchAllCountries() {
@@ -59,9 +79,18 @@ public class CountryController {
      * @return a {@link ResponseEntity} containing the country details if found, otherwise a 404 response.
      * @see CountryDTO
      */
+    @Operation(summary = "Find country by ID", description = "Retrieves country details by ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",
+                    description = "Country found",
+                    content = @Content(schema = @Schema(implementation = CountryDTO.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Country not found")
+    })
     @GetMapping("/{id}")
     @AuditLogHttp(logLevel = LogLevel.INFO)
-    public ResponseEntity<CountryDTO> findCountryById(@PathVariable String id) {
+    public ResponseEntity<CountryDTO> findCountryById(
+            @PathVariable @Parameter(description = "ID of the country") String id) {
         try {
             CountryDTO countryDTO = countryService.findCountryById(id);
             return ResponseEntity.ok(countryDTO);
@@ -76,9 +105,18 @@ public class CountryController {
      * @return a {@link ResponseEntity} with no content if the country was successfully deleted, otherwise a 404 response.
      * @see CountryDTO
      */
+    @Operation(summary = "Delete country by ID", description = "Deletes country by ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",
+                    description = "Country found",
+                    content = @Content(schema = @Schema(implementation = CountryDTO.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Country not found")
+    })
     @DeleteMapping("/delete/{id}")
     @AuditLogHttp(logLevel = LogLevel.INFO)
-    public ResponseEntity<Void> deleteCountry(@PathVariable String id) {
+    public ResponseEntity<Void> deleteCountry(
+            @PathVariable @Parameter(description = "ID of the country") String id) {
         try {
             countryService.deleteCountry(id);
             return ResponseEntity.noContent().build();

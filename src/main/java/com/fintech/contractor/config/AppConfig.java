@@ -3,6 +3,8 @@ package com.fintech.contractor.config;
 import com.fintech.contractor.auditor.AuditorAware;
 import com.fintech.contractor.repository.sql.SQLContractorRepository;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +46,16 @@ public class AppConfig {
     @Bean
     public SQLContractorRepository sqlContractorRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         return new SQLContractorRepository(namedParameterJdbcTemplate);
+    }
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Contractor API")
+                        .description("An API for serving operations with contractors.")
+                        .version("0.0.1-SNAPSHOT")
+                );
     }
 
 }
