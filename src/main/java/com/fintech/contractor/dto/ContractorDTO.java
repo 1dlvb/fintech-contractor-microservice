@@ -60,4 +60,14 @@ public class ContractorDTO {
     @Schema(description = "The organizational form ID of the contractor.", example = "2")
     private OrgFormDTO orgForm;
 
+    @JsonProperty("name_full")
+    public String getNameFull() {
+        return nameFull;
+    }
+
+    @JsonProperty("name_full")
+    public void setNameFull(String nameFull) {
+        this.nameFull = nameFull;
+    }
+
 }
