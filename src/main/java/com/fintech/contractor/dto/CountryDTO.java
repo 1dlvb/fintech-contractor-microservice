@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CountryDTO {
 
-    @Schema(example = "ABH")
+    @Schema(description = "The ID of the country.", example = "ABH")
     private String id;
-    @Schema(example = "Абхазия")
+    @Schema(description = "The name of the country.", example = "Абхазия")
     private String name;
 
 }

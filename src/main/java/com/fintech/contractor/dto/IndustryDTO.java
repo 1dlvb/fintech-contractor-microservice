@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class IndustryDTO {
 
-    @Schema(example = "2")
+    @Schema(description = "The ID of the industry.", example = "2")
     private Long id;
-    @Schema(example = "Автомобилестроение")
+    @Schema(description = "The name of the industry.", example = "Автомобилестроение")
     private String name;
 
 }

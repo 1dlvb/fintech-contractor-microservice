@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrgFormDTO {
 
-    @Schema(example = "2")
+    @Schema(description = "The ID of the organizational form.", example = "2")
     private Long id;
-    @Schema(example = "Автономная некоммерческая организация")
+    @Schema(description = "The name of the organizational form.", example = "Автономная некоммерческая организация")
     private String name;
 
 }
