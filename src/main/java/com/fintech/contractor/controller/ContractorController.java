@@ -6,6 +6,13 @@ import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.service.ContractorService;
 import com.onedlvb.advice.LogLevel;
 import com.onedlvb.advice.annotation.AuditLogHttp;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +33,12 @@ import java.util.List;
 /**
  * REST Controller for managing contractors.
  * Provides endpoints for CRUD operations and searching for contractors.
- * @author Matushkin Anton
+ *
  */
 @RestController
 @RequestMapping("/contractor")
 @RequiredArgsConstructor
+@Tag(name = "Contractor API", description = "API for managing contractors")
 public class ContractorController {
 
     @NonNull
@@ -38,12 +46,17 @@ public class ContractorController {
 
     /**
      * Saves or updates a contractor.
-     * @param contractorDTO ({@link ContractorDTO}) the contractor details to save or update.
+     * @param contractorDTO the contractor details to save or update.
      * @return a {@link ResponseEntity} containing the saved contractor details.
      */
+    @Operation(summary = "Save or update contractor", description = "Saves or updates contractor details.")
+    @ApiResponse(responseCode = "200",
+            description = "Contractor saved",
+            content = @Content(schema = @Schema(implementation = ContractorDTO.class)))
     @PutMapping("/save")
     @AuditLogHttp(logLevel = LogLevel.INFO)
-    public ResponseEntity<ContractorDTO> saveOrUpdateContractor(@RequestBody ContractorDTO contractorDTO) {
+    public ResponseEntity<ContractorDTO> saveOrUpdateContractor(
+            @RequestBody @Parameter(description = "Contractor details") ContractorDTO contractorDTO) {
         ContractorDTO savedContractorDTO = contractorService.saveOrUpdateContractor(contractorDTO);
         return ResponseEntity.ok(savedContractorDTO);
     }
@@ -52,11 +65,19 @@ public class ContractorController {
      * Retrieves a contractor by ID.
      * @param id the ID of the contractor.
      * @return a {@link ResponseEntity} containing the contractor details if found, otherwise a 404 response.
-     * @see ContractorDTO
      */
+    @Operation(summary = "Find contractor by ID", description = "Retrieves contractor details by ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",
+                    description = "Contractor found",
+                    content = @Content(schema = @Schema(implementation = ContractorDTO.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Contractor not found")
+    })
     @GetMapping("/{id}")
     @AuditLogHttp(logLevel = LogLevel.INFO)
-    public ResponseEntity<ContractorDTO> findContractorById(@PathVariable String id) {
+    public ResponseEntity<ContractorDTO> findContractorById(
+            @PathVariable @Parameter(description = "ID of the contractor") String id) {
         try {
             ContractorDTO contractorDTO = contractorService.findContractorById(id);
             return ResponseEntity.ok(contractorDTO);
@@ -69,11 +90,16 @@ public class ContractorController {
      * Deletes a contractor by ID.
      * @param id the ID of the contractor to delete.
      * @return a {@link ResponseEntity} with no content if the contractor was successfully deleted, otherwise a 404 response.
-     * @see ContractorDTO
      */
+    @Operation(summary = "Delete contractor by ID", description = "Deletes contractor by ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Contractor deleted"),
+            @ApiResponse(responseCode = "404", description = "Contractor not found")
+    })
     @DeleteMapping("/delete/{id}")
     @AuditLogHttp(logLevel = LogLevel.INFO)
-    public ResponseEntity<Void> deleteContractor(@PathVariable String id) {
+    public ResponseEntity<Void> deleteContractor(
+            @PathVariable @Parameter(description = "ID of the contractor to delete") String id) {
         try {
             contractorService.deleteContractor(id);
             return ResponseEntity.noContent().build();
@@ -88,14 +114,19 @@ public class ContractorController {
      * @param page the page number to retrieve, default is 0.
      * @param size the page size, default is 10.
      * @return a {@link ResponseEntity} containing a list of contractors that match the search criteria.
-     * @see ContractorDTO
      */
+    @Operation(summary = "Search contractors", description = "Searches for contractors based on the search criteria.")
+    @ApiResponse(responseCode = "200",
+            description = "Contractors found",
+            content = @Content(schema = @Schema(implementation = ContractorDTO.class)))
     @GetMapping("/search")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<ContractorDTO>> getContractors(
-            SearchContractorPayload payload,
-            @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "size", defaultValue = "10") Integer size) {
+            @Parameter(description = "Search criteria") SearchContractorPayload payload,
+            @RequestParam(name = "page", defaultValue = "0") @Parameter(description = "Page number to retrieve")
+            Integer page,
+            @RequestParam(name = "size", defaultValue = "10") @Parameter(description = "Number of contractors per page")
+            Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(contractorService.findContractors(payload, pageable));
     }
@@ -106,14 +137,20 @@ public class ContractorController {
      * @param page the page number to retrieve, default is 0.
      * @param size the page size, default is 10.
      * @return a {@link ResponseEntity} containing a list of contractors that match the search criteria.
-     * @see ContractorDTO
      */
+    @Operation(summary = "Search contractors with custom SQL",
+            description = "Searches for contractors using a custom SQL query.")
+    @ApiResponse(responseCode = "200",
+            description = "Contractors found",
+            content = @Content(schema = @Schema(implementation = ContractorDTO.class)))
     @GetMapping("/search/sql")
     @AuditLogHttp(logLevel = LogLevel.INFO)
     public ResponseEntity<List<ContractorDTO>> getContractorsSQL(
-            SearchContractorPayload payload,
-            @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "size", defaultValue = "10") Integer size) {
+            @Parameter(description = "Search criteria") SearchContractorPayload payload,
+            @RequestParam(name = "page", defaultValue = "0") @Parameter(description = "Page number to retrieve")
+            Integer page,
+            @RequestParam(name = "size", defaultValue = "10") @Parameter(description = "Number of contractors per page")
+            Integer size) {
         return ResponseEntity.ok(contractorService.findContractorsSQL(payload, page, size));
     }
 
