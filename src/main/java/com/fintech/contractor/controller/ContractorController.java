@@ -1,6 +1,8 @@
 package com.fintech.contractor.controller;
 
 import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
+import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.service.ContractorService;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -152,6 +155,11 @@ public class ContractorController {
             @RequestParam(name = "size", defaultValue = "10") @Parameter(description = "Number of contractors per page")
             Integer size) {
         return ResponseEntity.ok(contractorService.findContractorsSQL(payload, page, size));
+    }
+
+    @PatchMapping("/main-borrower")
+    public ResponseEntity<ContractorWithMainBorrowerDTO> updateMainBorrower(@RequestBody MainBorrowerDTO dto) {
+        return ResponseEntity.ok(contractorService.updateMainBorrower(dto));
     }
 
 }

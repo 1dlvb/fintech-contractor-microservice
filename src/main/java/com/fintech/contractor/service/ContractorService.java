@@ -1,6 +1,8 @@
 package com.fintech.contractor.service;
 
 import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
+import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import org.springframework.data.domain.Pageable;
@@ -52,5 +54,7 @@ public interface ContractorService {
      * @throws NotActiveException if the contractor is not active.
      */
     void deleteContractor(String id) throws NotActiveException;
+
+    ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO);
 
 }

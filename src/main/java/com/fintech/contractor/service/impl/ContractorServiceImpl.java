@@ -1,6 +1,8 @@
 package com.fintech.contractor.service.impl;
 
 import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
+import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Contractor;
 import com.fintech.contractor.payload.SearchContractorPayload;
@@ -98,6 +100,14 @@ public class ContractorServiceImpl implements ContractorService {
             throw new NotActiveException("Contractor is not active");
         }
     }
+
+        @Override
+        public ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO) {
+            Optional<Contractor> optional = contractorRepository.findById(mainBorrowerDTO.getContractorId());
+            Contractor contractor = optional.orElse(null);
+            contractor.setActiveMainBorrower(mainBorrowerDTO.isHasMainDeals());
+            return modelMapper.map(contractorRepository.save(contractor), ContractorWithMainBorrowerDTO.class);
+        }
 
     /**
      * Updates the properties of an existing contractor entity with new data.
