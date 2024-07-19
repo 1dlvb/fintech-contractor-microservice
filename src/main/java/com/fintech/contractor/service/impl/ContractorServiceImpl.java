@@ -102,6 +102,7 @@ public class ContractorServiceImpl implements ContractorService {
     }
 
         @Override
+        @AuditLog(logLevel = LogLevel.INFO)
         public ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO) {
             Optional<Contractor> optional = contractorRepository.findById(mainBorrowerDTO.getContractorId());
             Contractor contractor = optional.orElse(null);

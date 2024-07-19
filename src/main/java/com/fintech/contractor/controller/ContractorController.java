@@ -157,6 +157,7 @@ public class ContractorController {
         return ResponseEntity.ok(contractorService.findContractorsSQL(payload, page, size));
     }
 
+    @AuditLogHttp(logLevel = LogLevel.INFO)
     @PatchMapping("/main-borrower")
     public ResponseEntity<ContractorWithMainBorrowerDTO> updateMainBorrower(@RequestBody MainBorrowerDTO dto) {
         return ResponseEntity.ok(contractorService.updateMainBorrower(dto));
