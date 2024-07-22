@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO for representing a contractor.
+ * DTO for representing a contractor with main borrower field.
  * Contains basic information about a contractor entity.
  * @author Matushkin Anton
  * @see com.fintech.contractor.model.Contractor
@@ -62,7 +62,8 @@ public class ContractorWithMainBorrowerDTO {
     private OrgFormDTO orgForm;
 
     @JsonProperty(value = "active_main_borrower", defaultValue = "false")
-    @Schema(description = "The sign of the existence of transactions where the contractor is the main borrower. Default false.", example = "true")
+    @Schema(description = "The sign of the existence of transactions where the contractor is the main borrower." +
+            " Default false.", example = "true")
     private Boolean activeMainBorrower;
 
     @JsonProperty("name_full")

@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Service interface for managing contractors.
- * Defines methods for CRUD operations and searching contractors.
+ * Defines methods for CRUD operations, searching contractors and updating active main borrower.
  * @author Matushkin Anton
  */
 public interface ContractorService {
@@ -55,6 +55,10 @@ public interface ContractorService {
      */
     void deleteContractor(String id) throws NotActiveException;
 
+    /**
+     * Updates main borrower field.
+     * @param mainBorrowerDTO the DTO for updating main borrower.
+     */
     ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO);
 
 }
