@@ -2,7 +2,6 @@ package com.fintech.contractor.config;
 
 import com.fintech.contractor.auditor.AuditorAware;
 import com.fintech.contractor.repository.sql.SQLContractorRepository;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.modelmapper.ModelMapper;
@@ -31,11 +30,6 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
-    }
-
-    @Bean
-    public Dotenv dotenv() {
-        return Dotenv.configure().load();
     }
 
     @Bean

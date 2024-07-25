@@ -1,6 +1,8 @@
 package com.fintech.contractor.controller;
 
 import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
+import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.service.ContractorService;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -152,6 +155,26 @@ public class ContractorController {
             @RequestParam(name = "size", defaultValue = "10") @Parameter(description = "Number of contractors per page")
             Integer size) {
         return ResponseEntity.ok(contractorService.findContractorsSQL(payload, page, size));
+    }
+
+    /**
+     * Updates the main borrower information for a contractor.
+     * @param dto the DTO containing the main borrower information.
+     * @return the updated contractor with main borrower information.
+     */
+    @AuditLogHttp(logLevel = LogLevel.INFO)
+    @PatchMapping("/main-borrower")
+    @Operation(summary = "Update Main Borrower", description = "Updates the main borrower for a contractor.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated the main borrower information",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ContractorWithMainBorrowerDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Contractor not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<ContractorWithMainBorrowerDTO> updateMainBorrower(@RequestBody MainBorrowerDTO dto) {
+        return ResponseEntity.ok(contractorService.updateMainBorrower(dto));
     }
 
 }

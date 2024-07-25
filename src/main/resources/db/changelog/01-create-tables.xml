@@ -69,5 +69,11 @@
             </column>
         </createTable>
     </changeSet>
-
+    <changeSet id="2" author="matushkin">
+        <addColumn tableName="contractor">
+            <column name="active_main_borrower" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

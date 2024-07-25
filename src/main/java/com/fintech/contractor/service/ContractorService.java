@@ -1,6 +1,8 @@
 package com.fintech.contractor.service;
 
 import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
+import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +11,7 @@ import java.util.List;
 
 /**
  * Service interface for managing contractors.
- * Defines methods for CRUD operations and searching contractors.
+ * Defines methods for CRUD operations, searching contractors and updating active main borrower.
  * @author Matushkin Anton
  */
 public interface ContractorService {
@@ -52,5 +54,11 @@ public interface ContractorService {
      * @throws NotActiveException if the contractor is not active.
      */
     void deleteContractor(String id) throws NotActiveException;
+
+    /**
+     * Updates main borrower field.
+     * @param mainBorrowerDTO the DTO for updating main borrower.
+     */
+    ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO);
 
 }

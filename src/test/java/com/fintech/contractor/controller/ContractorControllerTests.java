@@ -3,8 +3,10 @@ package com.fintech.contractor.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fintech.contractor.config.AppConfig;
 import com.fintech.contractor.dto.ContractorDTO;
+import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
 import com.fintech.contractor.dto.CountryDTO;
 import com.fintech.contractor.dto.IndustryDTO;
+import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.dto.OrgFormDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Contractor;
@@ -118,6 +120,29 @@ public class ContractorControllerTests {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    public void testControllerUpdatesMainBorrower() throws Exception {
+        Contractor sampleContractor = buildSampleContractor();
+        MainBorrowerDTO mainBorrowerDTO = new MainBorrowerDTO();
+        mainBorrowerDTO.setContractorId(sampleContractor.getId());
+        mainBorrowerDTO.setHasMainDeals(true);
+
+        ContractorWithMainBorrowerDTO updatedContractorDTO =
+                modelMapper.map(sampleContractor, ContractorWithMainBorrowerDTO.class);
+        updatedContractorDTO.setActiveMainBorrower(true);
+
+        when(contractorService.updateMainBorrower(mainBorrowerDTO)).thenReturn(updatedContractorDTO);
+
+        mockMvc.perform(patch("/contractor/main-borrower")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mainBorrowerDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(updatedContractorDTO)))
+                .andExpect(jsonPath("$.active_main_borrower").value(true));
+
+    }
+
     private Contractor buildSampleContractor() {
         return Contractor.builder()
                 .id("1")
@@ -128,6 +153,7 @@ public class ContractorControllerTests {
                 .orgForm(new OrgForm(1L, "Sample OrgForm", true))
                 .country(new Country("UK", "United Kingdom", true))
                 .industry(new Industry(1L, "Sample Industry", true))
+                .activeMainBorrower(false)
                 .isActive(true)
                 .build();
     }

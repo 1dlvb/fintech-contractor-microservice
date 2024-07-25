@@ -106,6 +106,7 @@ public class ContractorRepositoryTests {
                 .orgForm(orgForm)
                 .country(country)
                 .industry(industry)
+                .activeMainBorrower(false)
                 .isActive(true)
                 .build();
     }

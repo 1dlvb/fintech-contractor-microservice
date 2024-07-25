@@ -65,6 +65,7 @@ public class ContractorServiceImplTests {
         String contractorId = "1";
         Contractor contractor = new Contractor();
         contractor.setId(contractorId);
+        contractor.setActiveMainBorrower(false);
         contractor.setIsActive(false);
 
         doThrow(new NotActiveException("Contractor is not active"))
