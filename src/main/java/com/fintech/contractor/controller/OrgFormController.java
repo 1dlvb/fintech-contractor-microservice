@@ -32,7 +32,7 @@ import java.util.List;
  * @author Matushkin Anton
  */
 @RestController
-@RequestMapping("/org_form")
+@RequestMapping("contractor/org_form")
 @RequiredArgsConstructor
 @Tag(name = "OrgForm API", description = "API for managing org form")
 public class OrgFormController {

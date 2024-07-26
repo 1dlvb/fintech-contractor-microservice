@@ -32,7 +32,7 @@ import java.util.List;
  * @author Matushkin Anton
  */
 @RestController
-@RequestMapping("/industry")
+@RequestMapping("contractor/industry")
 @RequiredArgsConstructor
 @Tag(name = "Industry API", description = "API for managing industries")
 public class IndustryController {
