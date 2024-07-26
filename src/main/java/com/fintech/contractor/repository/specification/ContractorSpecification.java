@@ -52,7 +52,7 @@ public final class ContractorSpecification {
 
             if (payload.country() != null) {
                 Join<Contractor, Country> countryJoin = root.join("country", JoinType.LEFT);
-                predicates.add(criteriaBuilder.like(countryJoin.get("name"),
+                predicates.add(criteriaBuilder.like(countryJoin.get("id"),
                         WildcatEnhancer.enhanceWithWildcatMatching(payload.country())));
             }
 
