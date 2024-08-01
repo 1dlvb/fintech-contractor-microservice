@@ -37,6 +37,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Arrays;
+
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Testcontainers
 public class ContractorControllerTests {
+
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("test_db")
@@ -74,19 +77,9 @@ public class ContractorControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setupSecurityContext() {
-        UserDetails user = User.withUsername("testUser")
-                .password("password")
-                .authorities(new SimpleGrantedAuthority("SUPERUSER"))
-                .build();
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
-        SecurityContextHolder.setContext(context);
-    }
-
     @Test
-    public void testControllerReturnsContractorById() throws Exception, NotActiveException {
+    public void testControllerReturnsContractorByIdAllowedUser() throws Exception, NotActiveException {
+        setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
         when(contractorService.findContractorById(sampleContractor.getId())).thenReturn(contractorDTO);
@@ -97,7 +90,8 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerCreatesNewContractor() throws Exception {
+    public void testControllerCreatesNewContractorAllowedUser() throws Exception {
+        setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
         when(contractorService.saveOrUpdateContractor(contractorDTO)).thenReturn(contractorDTO);
@@ -130,8 +124,44 @@ public class ContractorControllerTests {
                 .andExpect(content().json(objectMapper.writeValueAsString(contractorDTO)));
     }
 
+
     @Test
-    public void testControllerDeletesContractorById() throws Exception, NotActiveException {
+    public void testControllerCreatesNewContractorNotAllowedUser() throws Exception {
+        setupSecurityContext("USER");
+        Contractor sampleContractor = buildSampleContractor();
+        ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
+        when(contractorService.saveOrUpdateContractor(contractorDTO)).thenReturn(contractorDTO);
+        mockMvc.perform(put("/contractor/save")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                ContractorDTO.builder()
+                                        .id(sampleContractor.getId())
+                                        .parent(sampleContractor.getParent())
+                                        .name(sampleContractor.getName())
+                                        .nameFull(sampleContractor.getNameFull())
+                                        .inn(sampleContractor.getInn())
+                                        .ogrn(sampleContractor.getOgrn())
+                                        .country(CountryDTO.builder()
+                                                .id(sampleContractor.getCountry().getId())
+                                                .name(sampleContractor.getCountry().getName())
+                                                .build())
+                                        .industry(IndustryDTO.builder()
+                                                .id(sampleContractor.getIndustry().getId())
+                                                .name(sampleContractor.getIndustry().getName())
+                                                .build())
+                                        .orgForm(OrgFormDTO.builder()
+                                                .id(sampleContractor.getOrgForm().getId())
+                                                .name(sampleContractor.getOrgForm().getName())
+                                                .build())
+                                        .build()
+                        )))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testControllerDeletesContractorByIdAllowedUser() throws Exception, NotActiveException {
+        setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         doNothing().when(contractorService).deleteContractor(sampleContractor.getId());
         mockMvc.perform(delete("/contractor/delete/{id}", sampleContractor.getId()))
@@ -140,7 +170,18 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerUpdatesMainBorrower() throws Exception {
+    public void testControllerDeletesContractorByIdNotAllowedUser() throws Exception, NotActiveException {
+        setupSecurityContext("USER");
+        Contractor sampleContractor = buildSampleContractor();
+        doNothing().when(contractorService).deleteContractor(sampleContractor.getId());
+        mockMvc.perform(delete("/contractor/delete/{id}", sampleContractor.getId()))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testControllerUpdatesMainBorrowerAllowedUser() throws Exception {
+        setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         MainBorrowerDTO mainBorrowerDTO = new MainBorrowerDTO();
         mainBorrowerDTO.setContractorId(sampleContractor.getId());
@@ -162,6 +203,28 @@ public class ContractorControllerTests {
 
     }
 
+    @Test
+    public void testControllerUpdatesMainBorrowerNotAllowedUser() throws Exception {
+        setupSecurityContext("USER");
+        Contractor sampleContractor = buildSampleContractor();
+        MainBorrowerDTO mainBorrowerDTO = new MainBorrowerDTO();
+        mainBorrowerDTO.setContractorId(sampleContractor.getId());
+        mainBorrowerDTO.setHasMainDeals(true);
+
+        ContractorWithMainBorrowerDTO updatedContractorDTO =
+                modelMapper.map(sampleContractor, ContractorWithMainBorrowerDTO.class);
+        updatedContractorDTO.setActiveMainBorrower(true);
+
+        when(contractorService.updateMainBorrower(mainBorrowerDTO)).thenReturn(updatedContractorDTO);
+
+        mockMvc.perform(patch("/contractor/main-borrower")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mainBorrowerDTO)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
     private Contractor buildSampleContractor() {
         return Contractor.builder()
                 .id("1")
@@ -176,5 +239,16 @@ public class ContractorControllerTests {
                 .isActive(true)
                 .build();
     }
+
+    private void setupSecurityContext(String... roles) {
+        UserDetails user = User.withUsername("testUser")
+                .password("password")
+                .authorities(Arrays.stream(roles).map(SimpleGrantedAuthority::new).toList())
+                .build();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        SecurityContextHolder.setContext(context);
+    }
+
 
 }
