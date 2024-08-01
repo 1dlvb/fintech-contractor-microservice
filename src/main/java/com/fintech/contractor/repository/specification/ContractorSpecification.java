@@ -6,6 +6,8 @@ import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.util.WildcatEnhancer;
+import com.onedlvb.jwtlib.util.Roles;
+import com.onedlvb.jwtlib.util.SecurityUtil;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -35,37 +37,42 @@ public final class ContractorSpecification {
      * @return A {@link Specification} instance representing the query criteria.
      */
     public static Specification<Contractor> findContractorsBySpecifications(SearchContractorPayload payload) {
+        SearchContractorPayload finalPayload = roleBasedPayloadModification(payload);
+        if (finalPayload == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.disjunction();
+        }
+
         return (root, query, criteriaBuilder) -> {
             Stream<Predicate> predicateStream = Stream.of(
                     criteriaBuilder.isTrue(root.get("isActive")),
-                    createEqualPredicate(criteriaBuilder, root, "id", payload.id()),
-                    createEqualPredicate(criteriaBuilder, root, "parentId", payload.parentId()),
-                    createLikePredicate(criteriaBuilder, root, "name", payload.name()),
-                    createLikePredicate(criteriaBuilder, root, "nameFull", payload.nameFull()),
-                    createLikePredicate(criteriaBuilder, root, "inn", payload.inn()),
-                    createLikePredicate(criteriaBuilder, root, "ogrn", payload.ogrn())
+                    createEqualPredicate(criteriaBuilder, root, "id", payload.getId()),
+                    createEqualPredicate(criteriaBuilder, root, "parentId", payload.getParentId()),
+                    createLikePredicate(criteriaBuilder, root, "name", payload.getName()),
+                    createLikePredicate(criteriaBuilder, root, "nameFull", payload.getNameFull()),
+                    createLikePredicate(criteriaBuilder, root, "inn", payload.getInn()),
+                    createLikePredicate(criteriaBuilder, root, "ogrn", payload.getOgrn())
             );
 
             List<Predicate> predicates = predicateStream
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-            if (payload.country() != null) {
+            if (payload.getCountry() != null) {
                 Join<Contractor, Country> countryJoin = root.join("country", JoinType.LEFT);
                 predicates.add(criteriaBuilder.like(countryJoin.get("id"),
-                        WildcatEnhancer.enhanceWithWildcatMatching(payload.country())));
+                        WildcatEnhancer.enhanceWithWildcatMatching(payload.getCountry())));
             }
 
-            if (payload.industry() != null) {
+            if (payload.getIndustry() != null) {
                 Join<Contractor, Industry> industryJoin = root.join("industry");
-                predicates.add(criteriaBuilder.equal(industryJoin.get("id"), payload.industry().getId()));
-                predicates.add(criteriaBuilder.equal(industryJoin.get("name"), payload.industry().getName()));
+                predicates.add(criteriaBuilder.equal(industryJoin.get("id"), payload.getIndustry().getId()));
+                predicates.add(criteriaBuilder.equal(industryJoin.get("name"), payload.getIndustry().getName()));
             }
 
-            if (payload.orgForm() != null) {
+            if (payload.getOrgForm() != null) {
                 Join<Contractor, OrgForm> orgFormJoin = root.join("orgForm");
                 predicates.add(criteriaBuilder.like(orgFormJoin.get("name"),
-                        WildcatEnhancer.enhanceWithWildcatMatching(payload.orgForm())));
+                        WildcatEnhancer.enhanceWithWildcatMatching(payload.getOrgForm())));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -94,6 +101,79 @@ public final class ContractorSpecification {
      */
     private static Predicate createLikePredicate(CriteriaBuilder cb, Root<Contractor> root, String fieldName, String value) {
         return value != null ? cb.like(root.get(fieldName), WildcatEnhancer.enhanceWithWildcatMatching(value)) : null;
+    }
+
+    /**
+     * Modifies the given payload based on the roles of the user.
+     * If the user has SUPERUSER or DEAL_SUPERUSER roles, the payload is returned as is.
+     * If the payload is empty, it returns a payload with type based on the user roles.
+     * If the payload is not empty except for type, it returns null.
+     * Otherwise, it handles the payload based on the user's roles and returns the modified payload.
+     *<p>
+     * @param payload The original payload containing search criteria.
+     * @return The modified payload or null based on the user's roles and payload content.
+     */
+    private static SearchContractorPayload roleBasedPayloadModification(SearchContractorPayload payload) {
+        boolean hasSuperuser = SecurityUtil.hasRole(Roles.SUPERUSER);
+        boolean hasContractorSuperuser = SecurityUtil.hasRole(Roles.CONTRACTOR_SUPERUSER);
+
+        if (hasSuperuser || hasContractorSuperuser) {
+            return payload;
+        }
+
+        if (payload.isEmpty()) {
+            return handleEmptyExceptTypePayload();
+        }
+        if (!payload.isEmptyExceptCountry()) {
+            return null;
+        }
+        boolean hasContractorRus = SecurityUtil.hasRole(Roles.CONTRACTOR_RUS);
+
+        return handleNonEmptyPayload(payload, hasContractorRus);
+    }
+
+    /**
+     * Handles the case where the payload is empty except for type.
+     * It creates a new payload with the type based on the user's roles.
+     * <p>
+     * @return The modified payload or null if the user has no relevant roles.
+     */
+    private static SearchContractorPayload handleEmptyExceptTypePayload() {
+        boolean hasContractorRusRole = SecurityUtil.hasRole(Roles.CONTRACTOR_RUS);
+
+        String country = null;
+        if (hasContractorRusRole) {
+            country = "RUS";
+        }
+
+        if (country != null) {
+            return SearchContractorPayload.builder().country(country).build();
+        }
+        return null;
+    }
+
+    /**
+     * Handles the case where the payload is not empty except for country.
+     * It checks the type against the user's roles and returns the payload if it matches.
+     * <p>
+     * @param payload The original payload containing search criteria.
+     * @param hasContractorRus Indicates if the user has the CONTRACTOR_RUS role.
+     * @return The modified payload or null based on the user's roles and payload content.
+     */
+    private static SearchContractorPayload handleNonEmptyPayload(SearchContractorPayload payload,
+                                                                 boolean hasContractorRus) {
+        String country = payload.getCountry();
+        if (country == null) {
+            return null;
+        }
+
+        if (hasContractorRus) {
+            boolean hasRelevantType = country.equals("RUS");
+            payload = SearchContractorPayload.builder().country(country).build();
+            return hasRelevantType ? payload : null;
+        }
+
+        return null;
     }
 
 }
