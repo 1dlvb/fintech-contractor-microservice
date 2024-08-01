@@ -14,7 +14,6 @@ import com.fintech.contractor.model.Country;
 import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.service.ContractorService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
