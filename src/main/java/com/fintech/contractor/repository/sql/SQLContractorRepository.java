@@ -8,6 +8,7 @@ import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.util.WildcatEnhancer;
 import com.onedlvb.jwtlib.util.Roles;
 import com.onedlvb.jwtlib.util.SecurityUtil;
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,12 +47,9 @@ public class SQLContractorRepository {
         Integer offset = page * size;
 
         StringBuilder sqlBuilder = new StringBuilder(INITIAL_SQL);
-        if (payload.isEmpty() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
-            sqlBuilder.append("AND co.id = 'RUS'");
-            params.addValue("co.id", "RUS");
-            return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
-        } else if (!payload.isEmpty() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
-            return Collections.emptyList();
+        List<ContractorDTO> listOfRoleBasedResults = roleBasedSqlBuilderUpdate(payload, sqlBuilder, params);
+        if (listOfRoleBasedResults != null) {
+            return listOfRoleBasedResults;
         }
 
         if (payload.isEmptyExceptCountry() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
@@ -85,6 +83,32 @@ public class SQLContractorRepository {
         params.addValue("offset", offset);
 
         return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
+    }
+
+    /**
+     * Updates the SQL query based on the user's role and search criteria.
+     * <p>If the user has the CONTRACTOR_RUS role and the payload is empty, appends a filter for
+     * a specific ID ('RUS') to the query and executes it.</p>
+     *
+     * <p>If the user has the CONTRACTOR_RUS role but the payload is not empty, returns an empty list.</p>
+     *
+     * <p>If the user does not have the CONTRACTOR_RUS role, returns null.</p>
+     *
+     * @param payload The search criteria used to build the query.
+     * @param sqlBuilder The {@code StringBuilder} for constructing the query.
+     * @param params The {@code MapSqlParameterSource} for query parameters.
+     * @return A list of {@link ContractorDTO} if the query is executed; otherwise, an empty list or {@code null}.
+     */
+    @Nullable
+    private List<ContractorDTO> roleBasedSqlBuilderUpdate(SearchContractorPayload payload, StringBuilder sqlBuilder, MapSqlParameterSource params) {
+        if (payload.isEmpty() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
+            sqlBuilder.append("AND co.id = 'RUS'");
+            params.addValue("co.id", "RUS");
+            return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
+        } else if (!payload.isEmpty() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
+            return Collections.emptyList();
+        }
+        return null;
     }
 
     /**
