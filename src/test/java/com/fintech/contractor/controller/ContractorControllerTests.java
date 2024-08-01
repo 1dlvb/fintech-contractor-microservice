@@ -14,6 +14,7 @@ import com.fintech.contractor.model.Country;
 import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.service.ContractorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -66,6 +73,18 @@ public class ContractorControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setupSecurityContext() {
+        UserDetails user = User.withUsername("testUser")
+                .password("password")
+                .authorities(new SimpleGrantedAuthority("SUPERUSER"))
+                .build();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        SecurityContextHolder.setContext(context);
+    }
+
     @Test
     public void testControllerReturnsContractorById() throws Exception, NotActiveException {
         Contractor sampleContractor = buildSampleContractor();

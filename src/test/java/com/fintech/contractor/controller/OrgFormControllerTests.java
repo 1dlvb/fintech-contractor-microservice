@@ -6,6 +6,7 @@ import com.fintech.contractor.dto.OrgFormDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.service.OrgFormService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -61,12 +68,23 @@ public class OrgFormControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setupSecurityContext() {
+        UserDetails user = User.withUsername("testUser")
+                .password("password")
+                .authorities(new SimpleGrantedAuthority("SUPERUSER"))
+                .build();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        SecurityContextHolder.setContext(context);
+    }
     @Test
     public void testControllerReturnsOrgFormById() throws Exception, NotActiveException {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         OrgFormDTO orgFormDTO = modelMapper.map(sampleOrgForm, OrgFormDTO.class);
         when(orgFormService.findOrgFormById(sampleOrgForm.getId())).thenReturn(orgFormDTO);
-        mockMvc.perform(get("/org_form/{id}", sampleOrgForm.getId()))
+        mockMvc.perform(get("/contractor/org_form/{id}", sampleOrgForm.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(orgFormDTO), true));
@@ -77,7 +95,7 @@ public class OrgFormControllerTests {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         OrgFormDTO orgFormDTO = modelMapper.map(sampleOrgForm, OrgFormDTO.class);
         when(orgFormService.saveOrUpdateOrgForm(orgFormDTO)).thenReturn(orgFormDTO);
-        mockMvc.perform(put("/org_form/save")
+        mockMvc.perform(put("/contractor/org_form/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 OrgFormDTO.builder()
@@ -94,7 +112,7 @@ public class OrgFormControllerTests {
     public void testControllerDeletesOrgFormById() throws Exception, NotActiveException {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         doNothing().when(orgFormService).deleteOrgForm(sampleOrgForm.getId());
-        mockMvc.perform(delete("/org_form/delete/{id}", sampleOrgForm.getId()))
+        mockMvc.perform(delete("/contractor/org_form/delete/{id}", sampleOrgForm.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -107,7 +125,7 @@ public class OrgFormControllerTests {
         OrgFormDTO orgFormDTO2 = modelMapper.map(orgForm2, OrgFormDTO.class);
         when(orgFormService.fetchAllOrgForms()).thenReturn(Arrays.asList(orgFormDTO1, orgFormDTO2));
 
-        mockMvc.perform(get("/org_form/all"))
+        mockMvc.perform(get("/contractor/org_form/all"))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),

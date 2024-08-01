@@ -6,6 +6,7 @@ import com.fintech.contractor.dto.CountryDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Country;
 import com.fintech.contractor.service.CountryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -61,12 +68,24 @@ public class CountryControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setupSecurityContext() {
+        UserDetails user = User.withUsername("testUser")
+                .password("password")
+                .authorities(new SimpleGrantedAuthority("SUPERUSER"))
+                .build();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        SecurityContextHolder.setContext(context);
+    }
+
     @Test
     public void testControllerReturnsCountryById() throws Exception, NotActiveException {
         Country sampleCountry = buildSampleCountry("Co", "Country");
         CountryDTO countryDTO = modelMapper.map(sampleCountry, CountryDTO.class);
         when(countryService.findCountryById(sampleCountry.getId())).thenReturn(countryDTO);
-        mockMvc.perform(get("/country/{id}", sampleCountry.getId()))
+        mockMvc.perform(get("/contractor/country/{id}", sampleCountry.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(countryDTO), true));
@@ -77,7 +96,7 @@ public class CountryControllerTests {
         Country sampleCountry = buildSampleCountry("Co", "Country");
         CountryDTO countryDTO = modelMapper.map(sampleCountry, CountryDTO.class);
         when(countryService.saveOrUpdateCountry(countryDTO)).thenReturn(countryDTO);
-        mockMvc.perform(put("/country/save")
+        mockMvc.perform(put("/contractor/country/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 CountryDTO.builder()
@@ -94,7 +113,7 @@ public class CountryControllerTests {
     public void testControllerDeletesCountryById() throws Exception, NotActiveException {
         Country sampleCountry = buildSampleCountry("CO", "Country");
         doNothing().when(countryService).deleteCountry(sampleCountry.getId());
-        mockMvc.perform(delete("/country/delete/{id}", sampleCountry.getId()))
+        mockMvc.perform(delete("/contractor/country/delete/{id}", sampleCountry.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -107,7 +126,7 @@ public class CountryControllerTests {
         CountryDTO countryDTO2 = modelMapper.map(country2, CountryDTO.class);
         when(countryService.fetchAllCountries()).thenReturn(Arrays.asList(countryDTO1, countryDTO2));
 
-        mockMvc.perform(get("/country/all"))
+        mockMvc.perform(get("/contractor/country/all"))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),

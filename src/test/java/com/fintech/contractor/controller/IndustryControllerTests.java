@@ -6,6 +6,7 @@ import com.fintech.contractor.dto.IndustryDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.service.IndustryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -50,6 +57,7 @@ public class IndustryControllerTests {
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
     }
 
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,12 +69,24 @@ public class IndustryControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setupSecurityContext() {
+        UserDetails user = User.withUsername("testUser")
+                .password("password")
+                .authorities(new SimpleGrantedAuthority("SUPERUSER"))
+                .build();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        SecurityContextHolder.setContext(context);
+    }
+
     @Test
     public void testControllerReturnsIndustryById() throws Exception, NotActiveException {
         Industry sampleIndustry = buildSampleIndustry(1L, "Industry");
         IndustryDTO industryDTO = modelMapper.map(sampleIndustry, IndustryDTO.class);
         when(industryService.findIndustryById(sampleIndustry.getId())).thenReturn(industryDTO);
-        mockMvc.perform(get("/industry/{id}", sampleIndustry.getId()))
+        mockMvc.perform(get("/contractor/industry/{id}", sampleIndustry.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(industryDTO), true));
@@ -77,7 +97,7 @@ public class IndustryControllerTests {
         Industry sampleIndustry = buildSampleIndustry(1L, "Industry");
         IndustryDTO industryDTO = modelMapper.map(sampleIndustry, IndustryDTO.class);
         when(industryService.saveOrUpdateIndustry(industryDTO)).thenReturn(industryDTO);
-        mockMvc.perform(put("/industry/save")
+        mockMvc.perform(put("/contractor/industry/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 IndustryDTO.builder()
@@ -94,7 +114,7 @@ public class IndustryControllerTests {
     public void testControllerDeletesIndustryById() throws Exception, NotActiveException {
         Industry sampleIndustry = buildSampleIndustry(1L, "Industry");
         doNothing().when(industryService).deleteIndustry(sampleIndustry.getId());
-        mockMvc.perform(delete("/industry/delete/{id}", sampleIndustry.getId()))
+        mockMvc.perform(delete("/contractor/industry/delete/{id}", sampleIndustry.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -107,7 +127,7 @@ public class IndustryControllerTests {
         IndustryDTO industryDTO2 = modelMapper.map(industry2, IndustryDTO.class);
         when(industryService.fetchAllIndustries()).thenReturn(Arrays.asList(industryDTO1, industryDTO2));
 
-        mockMvc.perform(get("/industry/all"))
+        mockMvc.perform(get("/contractor/industry/all"))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
