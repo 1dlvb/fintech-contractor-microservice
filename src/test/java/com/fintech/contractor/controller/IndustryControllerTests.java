@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class IndustryControllerTests {
+class IndustryControllerTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -82,7 +82,7 @@ public class IndustryControllerTests {
     }
 
     @Test
-    public void testControllerReturnsIndustryById() throws Exception, NotActiveException {
+    void testControllerReturnsIndustryById() throws Exception, NotActiveException {
         Industry sampleIndustry = buildSampleIndustry(1L, "Industry");
         IndustryDTO industryDTO = modelMapper.map(sampleIndustry, IndustryDTO.class);
         when(industryService.findIndustryById(sampleIndustry.getId())).thenReturn(industryDTO);
@@ -93,7 +93,7 @@ public class IndustryControllerTests {
     }
 
     @Test
-    public void testControllerCreatesNewIndustry() throws Exception {
+    void testControllerCreatesNewIndustry() throws Exception {
         Industry sampleIndustry = buildSampleIndustry(1L, "Industry");
         IndustryDTO industryDTO = modelMapper.map(sampleIndustry, IndustryDTO.class);
         when(industryService.saveOrUpdateIndustry(industryDTO)).thenReturn(industryDTO);
@@ -111,7 +111,7 @@ public class IndustryControllerTests {
     }
 
     @Test
-    public void testControllerDeletesIndustryById() throws Exception, NotActiveException {
+    void testControllerDeletesIndustryById() throws Exception, NotActiveException {
         Industry sampleIndustry = buildSampleIndustry(1L, "Industry");
         doNothing().when(industryService).deleteIndustry(sampleIndustry.getId());
         mockMvc.perform(delete("/contractor/industry/delete/{id}", sampleIndustry.getId()))
@@ -120,7 +120,7 @@ public class IndustryControllerTests {
     }
 
     @Test
-    public void testControllerReturnsAllIndustries() throws Exception {
+    void testControllerReturnsAllIndustries() throws Exception {
         Industry industry1 = buildSampleIndustry(1L, "Industry 1");
         Industry industry2 = buildSampleIndustry(2L, "Industry 2");
         IndustryDTO industryDTO1 = modelMapper.map(industry1, IndustryDTO.class);

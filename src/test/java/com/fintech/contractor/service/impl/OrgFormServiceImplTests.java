@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class OrgFormServiceImplTests {
+class OrgFormServiceImplTests {
 
 
     @Container
@@ -47,7 +47,7 @@ public class OrgFormServiceImplTests {
     private OrgFormService orgFormService;
 
     @Test
-    public void testFindOrgFormByIdWhenOrgFormNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testFindOrgFormByIdWhenOrgFormNotActiveThrowsNotActiveException() throws NotActiveException {
         Long orgFormId = 1L;
         OrgForm orgForm = new OrgForm();
         orgForm.setId(orgFormId);
@@ -61,7 +61,7 @@ public class OrgFormServiceImplTests {
 
 
     @Test
-    public void testDeleteOrgFormWhenOrgFormNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testDeleteOrgFormWhenOrgFormNotActiveThrowsNotActiveException() throws NotActiveException {
         Long orgFormId = 1L;
         OrgForm orgForm = new OrgForm();
         orgForm.setId(orgFormId);

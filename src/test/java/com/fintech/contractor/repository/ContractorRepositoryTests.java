@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Import(AppConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
-public class ContractorRepositoryTests {
+class ContractorRepositoryTests {
 
 
     @Container
@@ -50,7 +50,7 @@ public class ContractorRepositoryTests {
     private TestEntityManager entityManager;
 
     @Test
-    public void testRepositorySavesContractor() {
+    void testRepositorySavesContractor() {
         Contractor newContractor = buildSampleContractor();
         Contractor savedContractor = repository.save(newContractor);
         assertEquals(savedContractor, entityManager.find(Contractor.class, newContractor.getId()),
@@ -58,7 +58,7 @@ public class ContractorRepositoryTests {
     }
 
     @Test
-    public void testRepositoryUpdatesContractor() {
+    void testRepositoryUpdatesContractor() {
         Contractor newContractor = buildSampleContractor();
         entityManager.persistAndFlush(newContractor);
         newContractor.setName("Updated Contractor Name");
@@ -69,7 +69,7 @@ public class ContractorRepositoryTests {
     }
 
     @Test
-    public void testRepositoryFindsContractorById() {
+    void testRepositoryFindsContractorById() {
         Contractor newContractor = buildSampleContractor();
         entityManager.persistAndFlush(newContractor);
         assertTrue(repository.findById(newContractor.getId()).isPresent(),
@@ -77,7 +77,7 @@ public class ContractorRepositoryTests {
     }
 
     @Test
-    public void testRepositoryDeletesContractorById() {
+    void testRepositoryDeletesContractorById() {
         Contractor newContractor = buildSampleContractor();
         entityManager.persistAndFlush(newContractor);
         repository.deleteById(newContractor.getId());

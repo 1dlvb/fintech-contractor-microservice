@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Testcontainers
 @ActiveProfiles("test")
 @Transactional
-public class SQLContractorRepositoryTests {
+class SQLContractorRepositoryTests {
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("test_db")
@@ -41,7 +41,7 @@ public class SQLContractorRepositoryTests {
 
     @Test
     @Sql("/sql/contractors_test.sql")
-    public void testFindContractorByFilters() {
+    void testFindContractorByFilters() {
         SearchContractorPayload filters = new SearchContractorPayload(
                 "1",
                 null,

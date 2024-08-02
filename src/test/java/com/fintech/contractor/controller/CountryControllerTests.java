@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class CountryControllerTests {
+class CountryControllerTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -81,7 +81,7 @@ public class CountryControllerTests {
     }
 
     @Test
-    public void testControllerReturnsCountryById() throws Exception, NotActiveException {
+    void testControllerReturnsCountryById() throws Exception, NotActiveException {
         Country sampleCountry = buildSampleCountry("Co", "Country");
         CountryDTO countryDTO = modelMapper.map(sampleCountry, CountryDTO.class);
         when(countryService.findCountryById(sampleCountry.getId())).thenReturn(countryDTO);
@@ -92,7 +92,7 @@ public class CountryControllerTests {
     }
 
     @Test
-    public void testControllerCreatesNewCountry() throws Exception {
+    void testControllerCreatesNewCountry() throws Exception {
         Country sampleCountry = buildSampleCountry("Co", "Country");
         CountryDTO countryDTO = modelMapper.map(sampleCountry, CountryDTO.class);
         when(countryService.saveOrUpdateCountry(countryDTO)).thenReturn(countryDTO);
@@ -110,7 +110,7 @@ public class CountryControllerTests {
     }
 
     @Test
-    public void testControllerDeletesCountryById() throws Exception, NotActiveException {
+    void testControllerDeletesCountryById() throws Exception, NotActiveException {
         Country sampleCountry = buildSampleCountry("CO", "Country");
         doNothing().when(countryService).deleteCountry(sampleCountry.getId());
         mockMvc.perform(delete("/contractor/country/delete/{id}", sampleCountry.getId()))
@@ -119,7 +119,7 @@ public class CountryControllerTests {
     }
 
     @Test
-    public void testControllerReturnsAllCountries() throws Exception {
+    void testControllerReturnsAllCountries() throws Exception {
         Country country1 = buildSampleCountry("CO1", "Country 1");
         Country country2 = buildSampleCountry("CO2", "Country 2");
         CountryDTO countryDTO1 = modelMapper.map(country1, CountryDTO.class);

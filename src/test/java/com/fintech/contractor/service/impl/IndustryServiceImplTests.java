@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class IndustryServiceImplTests {
+class IndustryServiceImplTests {
 
 
     @Container
@@ -47,7 +47,7 @@ public class IndustryServiceImplTests {
     private IndustryService industryService;
 
     @Test
-    public void testFindIndustryByIdWhenIndustryNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testFindIndustryByIdWhenIndustryNotActiveThrowsNotActiveException() throws NotActiveException {
         Long industryId = 1L;
         Industry industry = new Industry();
         industry.setId(industryId);
@@ -61,7 +61,7 @@ public class IndustryServiceImplTests {
 
 
     @Test
-    public void testDeleteIndustryWhenIndustryNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testDeleteIndustryWhenIndustryNotActiveThrowsNotActiveException() throws NotActiveException {
         Long industryId = 1L;
         Industry industry = new Industry();
         industry.setId(industryId);

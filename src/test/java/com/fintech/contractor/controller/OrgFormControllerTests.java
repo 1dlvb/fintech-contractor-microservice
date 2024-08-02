@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class OrgFormControllerTests {
+class OrgFormControllerTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -80,7 +80,7 @@ public class OrgFormControllerTests {
         SecurityContextHolder.setContext(context);
     }
     @Test
-    public void testControllerReturnsOrgFormById() throws Exception, NotActiveException {
+    void testControllerReturnsOrgFormById() throws Exception, NotActiveException {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         OrgFormDTO orgFormDTO = modelMapper.map(sampleOrgForm, OrgFormDTO.class);
         when(orgFormService.findOrgFormById(sampleOrgForm.getId())).thenReturn(orgFormDTO);
@@ -91,7 +91,7 @@ public class OrgFormControllerTests {
     }
 
     @Test
-    public void testControllerCreatesNewOrgForm() throws Exception {
+    void testControllerCreatesNewOrgForm() throws Exception {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         OrgFormDTO orgFormDTO = modelMapper.map(sampleOrgForm, OrgFormDTO.class);
         when(orgFormService.saveOrUpdateOrgForm(orgFormDTO)).thenReturn(orgFormDTO);
@@ -109,7 +109,7 @@ public class OrgFormControllerTests {
     }
 
     @Test
-    public void testControllerDeletesOrgFormById() throws Exception, NotActiveException {
+    void testControllerDeletesOrgFormById() throws Exception, NotActiveException {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         doNothing().when(orgFormService).deleteOrgForm(sampleOrgForm.getId());
         mockMvc.perform(delete("/contractor/org_form/delete/{id}", sampleOrgForm.getId()))
@@ -118,7 +118,7 @@ public class OrgFormControllerTests {
     }
 
     @Test
-    public void testControllerReturnsAllOrgForms() throws Exception {
+    void testControllerReturnsAllOrgForms() throws Exception {
         OrgForm orgForm1 = buildSampleOrgForm(1L, "OrgForm 1");
         OrgForm orgForm2 = buildSampleOrgForm(2L, "OrgForm 2");
         OrgFormDTO orgFormDTO1 = modelMapper.map(orgForm1, OrgFormDTO.class);

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Import(AppConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
-public class CountryRepositoryTests {
+class CountryRepositoryTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -49,7 +49,7 @@ public class CountryRepositoryTests {
     private TestEntityManager entityManager;
 
     @Test
-    public void testRepositorySavesCountry() {
+    void testRepositorySavesCountry() {
         Country newCountry = buildSampleCountry("CO", "Country");
         Country savedCountry = repository.save(newCountry);
         assertEquals(savedCountry, entityManager.find(Country.class, newCountry.getId()),
@@ -57,7 +57,7 @@ public class CountryRepositoryTests {
     }
 
     @Test
-    public void testRepositoryUpdatesCountry() {
+    void testRepositoryUpdatesCountry() {
         Country newCountry = buildSampleCountry("CO", "Country");
         entityManager.persistAndFlush(newCountry);
         newCountry.setName("Updated Country Name");
@@ -68,7 +68,7 @@ public class CountryRepositoryTests {
     }
 
     @Test
-    public void testRepositoryFindsCountryById() {
+    void testRepositoryFindsCountryById() {
         Country newCountry = buildSampleCountry("CO", "Country");
         entityManager.persistAndFlush(newCountry);
         assertTrue(repository.findById(newCountry.getId()).isPresent(),
@@ -76,7 +76,7 @@ public class CountryRepositoryTests {
     }
 
     @Test
-    public void testRepositoryDeletesCountryById() {
+    void testRepositoryDeletesCountryById() {
         Country newCountry = buildSampleCountry("CO", "Country");
         entityManager.persistAndFlush(newCountry);
         repository.deleteById(newCountry.getId());
@@ -85,7 +85,7 @@ public class CountryRepositoryTests {
     }
 
     @Test
-    public void testRepositoryReturnsAllCountries() {
+    void testRepositoryReturnsAllCountries() {
         entityManager.clear();
         Country newCountry1 = buildSampleCountry("UK", "United Kingdom");
         Country newCountry2 = buildSampleCountry("US", "United States");

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class ContractorServiceImplTests {
+class ContractorServiceImplTests {
 
 
     @Container
@@ -47,7 +47,7 @@ public class ContractorServiceImplTests {
     private ContractorService contractorService;
 
     @Test
-    public void testFindContractorByIdWhenContractorNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testFindContractorByIdWhenContractorNotActiveThrowsNotActiveException() throws NotActiveException {
         String contractorId = "1";
         Contractor contractor = new Contractor();
         contractor.setId(contractorId);
@@ -61,7 +61,7 @@ public class ContractorServiceImplTests {
 
 
     @Test
-    public void testDeleteContractorWhenContractorNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testDeleteContractorWhenContractorNotActiveThrowsNotActiveException() throws NotActiveException {
         String contractorId = "1";
         Contractor contractor = new Contractor();
         contractor.setId(contractorId);

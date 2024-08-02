@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class ContractorControllerTests {
+class ContractorControllerTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -77,7 +77,7 @@ public class ContractorControllerTests {
     private ObjectMapper objectMapper;
 
     @Test
-    public void testControllerReturnsContractorByIdAllowedUser() throws Exception, NotActiveException {
+    void testControllerReturnsContractorByIdAllowedUser() throws Exception, NotActiveException {
         setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
@@ -89,7 +89,7 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerCreatesNewContractorAllowedUser() throws Exception {
+    void testControllerCreatesNewContractorAllowedUser() throws Exception {
         setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
@@ -125,7 +125,7 @@ public class ContractorControllerTests {
 
 
     @Test
-    public void testControllerCreatesNewContractorNotAllowedUser() throws Exception {
+    void testControllerCreatesNewContractorNotAllowedUser() throws Exception {
         setupSecurityContext("USER");
         Contractor sampleContractor = buildSampleContractor();
         ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
@@ -159,7 +159,7 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerDeletesContractorByIdAllowedUser() throws Exception, NotActiveException {
+    void testControllerDeletesContractorByIdAllowedUser() throws Exception, NotActiveException {
         setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         doNothing().when(contractorService).deleteContractor(sampleContractor.getId());
@@ -169,7 +169,7 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerDeletesContractorByIdNotAllowedUser() throws Exception, NotActiveException {
+    void testControllerDeletesContractorByIdNotAllowedUser() throws Exception, NotActiveException {
         setupSecurityContext("USER");
         Contractor sampleContractor = buildSampleContractor();
         doNothing().when(contractorService).deleteContractor(sampleContractor.getId());
@@ -179,7 +179,7 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerUpdatesMainBorrowerAllowedUser() throws Exception {
+    void testControllerUpdatesMainBorrowerAllowedUser() throws Exception {
         setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         MainBorrowerDTO mainBorrowerDTO = new MainBorrowerDTO();
@@ -203,7 +203,7 @@ public class ContractorControllerTests {
     }
 
     @Test
-    public void testControllerUpdatesMainBorrowerNotAllowedUser() throws Exception {
+    void testControllerUpdatesMainBorrowerNotAllowedUser() throws Exception {
         setupSecurityContext("USER");
         Contractor sampleContractor = buildSampleContractor();
         MainBorrowerDTO mainBorrowerDTO = new MainBorrowerDTO();
