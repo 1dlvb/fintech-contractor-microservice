@@ -8,7 +8,6 @@ import com.fintech.contractor.dto.CountryDTO;
 import com.fintech.contractor.dto.IndustryDTO;
 import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.dto.OrgFormDTO;
-import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.model.Contractor;
 import com.fintech.contractor.model.Country;
 import com.fintech.contractor.model.Industry;
