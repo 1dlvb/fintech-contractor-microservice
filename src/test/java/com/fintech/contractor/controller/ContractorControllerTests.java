@@ -77,7 +77,7 @@ class ContractorControllerTests {
     private ObjectMapper objectMapper;
 
     @Test
-    void testControllerReturnsContractorByIdAllowedUser() throws Exception, NotActiveException {
+    void testControllerReturnsContractorByIdAllowedUser() throws Exception {
         setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         ContractorDTO contractorDTO = modelMapper.map(sampleContractor, ContractorDTO.class);
@@ -159,7 +159,7 @@ class ContractorControllerTests {
     }
 
     @Test
-    void testControllerDeletesContractorByIdAllowedUser() throws Exception, NotActiveException {
+    void testControllerDeletesContractorByIdAllowedUser() throws Exception {
         setupSecurityContext("SUPERUSER");
         Contractor sampleContractor = buildSampleContractor();
         doNothing().when(contractorService).deleteContractor(sampleContractor.getId());
@@ -169,7 +169,7 @@ class ContractorControllerTests {
     }
 
     @Test
-    void testControllerDeletesContractorByIdNotAllowedUser() throws Exception, NotActiveException {
+    void testControllerDeletesContractorByIdNotAllowedUser() throws Exception {
         setupSecurityContext("USER");
         Contractor sampleContractor = buildSampleContractor();
         doNothing().when(contractorService).deleteContractor(sampleContractor.getId());

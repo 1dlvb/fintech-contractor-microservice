@@ -81,7 +81,7 @@ class CountryControllerTests {
     }
 
     @Test
-    void testControllerReturnsCountryById() throws Exception, NotActiveException {
+    void testControllerReturnsCountryById() throws Exception {
         Country sampleCountry = buildSampleCountry("Co", "Country");
         CountryDTO countryDTO = modelMapper.map(sampleCountry, CountryDTO.class);
         when(countryService.findCountryById(sampleCountry.getId())).thenReturn(countryDTO);
@@ -110,7 +110,7 @@ class CountryControllerTests {
     }
 
     @Test
-    void testControllerDeletesCountryById() throws Exception, NotActiveException {
+    void testControllerDeletesCountryById() throws Exception {
         Country sampleCountry = buildSampleCountry("CO", "Country");
         doNothing().when(countryService).deleteCountry(sampleCountry.getId());
         mockMvc.perform(delete("/contractor/country/delete/{id}", sampleCountry.getId()))

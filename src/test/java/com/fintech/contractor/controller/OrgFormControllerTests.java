@@ -80,7 +80,7 @@ class OrgFormControllerTests {
         SecurityContextHolder.setContext(context);
     }
     @Test
-    void testControllerReturnsOrgFormById() throws Exception, NotActiveException {
+    void testControllerReturnsOrgFormById() throws Exception {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         OrgFormDTO orgFormDTO = modelMapper.map(sampleOrgForm, OrgFormDTO.class);
         when(orgFormService.findOrgFormById(sampleOrgForm.getId())).thenReturn(orgFormDTO);
@@ -109,7 +109,7 @@ class OrgFormControllerTests {
     }
 
     @Test
-    void testControllerDeletesOrgFormById() throws Exception, NotActiveException {
+    void testControllerDeletesOrgFormById() throws Exception {
         OrgForm sampleOrgForm = buildSampleOrgForm(1L, "OrgForm");
         doNothing().when(orgFormService).deleteOrgForm(sampleOrgForm.getId());
         mockMvc.perform(delete("/contractor/org_form/delete/{id}", sampleOrgForm.getId()))
