@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @Import(AppConfig.class)
 @SpringBootTest
 @Testcontainers
-public class CountryServiceImplTests {
+class CountryServiceImplTests {
 
 
     @Container
@@ -47,7 +47,7 @@ public class CountryServiceImplTests {
     private CountryService countryService;
 
     @Test
-    public void testFindCountryByIdWhenCountryNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testFindCountryByIdWhenCountryNotActiveThrowsNotActiveException() throws NotActiveException {
         String countryId = "1";
         Country country = new Country();
         country.setId(countryId);
@@ -61,7 +61,7 @@ public class CountryServiceImplTests {
 
 
     @Test
-    public void testDeleteCountryWhenCountryNotActiveThrowsNotActiveException() throws NotActiveException {
+    void testDeleteCountryWhenCountryNotActiveThrowsNotActiveException() throws NotActiveException {
         String countryId = "1";
         Country country = new Country();
         country.setId(countryId);

@@ -1,6 +1,7 @@
 package com.fintech.contractor.auditor;
 
 import lombok.NonNull;
+import org.springframework.data.domain.AuditorAware;
 
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
  * This implementation returns a fixed username "username".
  * @author Matushkin Anton
  */
-public class AuditorAware implements org.springframework.data.domain.AuditorAware<String> {
+public class AuditorAwareImpl implements AuditorAware<String> {
 
 
     /**

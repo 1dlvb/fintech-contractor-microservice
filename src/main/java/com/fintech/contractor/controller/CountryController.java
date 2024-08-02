@@ -32,7 +32,7 @@ import java.util.List;
  * @author Matushkin Anton
  */
 @RestController
-@RequestMapping("/country")
+@RequestMapping("contractor/country")
 @RequiredArgsConstructor
 @Tag(name = "Country API", description = "API for managing countries")
 public class CountryController {
@@ -107,8 +107,8 @@ public class CountryController {
      */
     @Operation(summary = "Delete country by ID", description = "Deletes country by ID.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    description = "Country found",
+            @ApiResponse(responseCode = "204",
+                    description = "Country deleted",
                     content = @Content(schema = @Schema(implementation = CountryDTO.class))),
             @ApiResponse(responseCode = "404",
                     description = "Country not found")

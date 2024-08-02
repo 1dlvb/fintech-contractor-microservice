@@ -1,6 +1,6 @@
 package com.fintech.contractor.config;
 
-import com.fintech.contractor.auditor.AuditorAware;
+import com.fintech.contractor.auditor.AuditorAwareImpl;
 import com.fintech.contractor.repository.sql.SQLContractorRepository;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -24,7 +24,7 @@ public class AppConfig {
 
     @Bean
     public org.springframework.data.domain.AuditorAware<String> auditorProvider() {
-        return new AuditorAware();
+        return new AuditorAwareImpl();
     }
 
     @Bean

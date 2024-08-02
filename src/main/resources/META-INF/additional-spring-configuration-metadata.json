@@ -14,5 +14,15 @@
       "name": "audit-lib-spring-boot-starter.file-path",
       "type": "java.lang.String",
       "description": "Path for logging file."
+    },
+    {
+      "name": "jwt-lib-spring-boot-starter.secret",
+      "type": "java.lang.String",
+      "description": "Description for jwt-lib-spring-boot-starter.secret."
+    },
+    {
+      "name": "jwt-lib-spring-boot-starter.algorithm",
+      "type": "java.lang.String",
+      "description": "Description for jwt-lib-spring-boot-starter.algorithm."
     }
   ] }

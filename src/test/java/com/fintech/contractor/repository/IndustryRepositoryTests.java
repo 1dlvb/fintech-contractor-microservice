@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Import(AppConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
-public class IndustryRepositoryTests {
+class IndustryRepositoryTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -59,7 +59,7 @@ public class IndustryRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositorySavesIndustry() {
+    void testRepositorySavesIndustry() {
         Industry newIndustry = buildSampleIndustry("Industry 1");
         Industry savedIndustry = repository.save(newIndustry);
         assertEquals(savedIndustry, entityManager.find(Industry.class, savedIndustry.getId()),
@@ -69,7 +69,7 @@ public class IndustryRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryUpdatesIndustry() {
+     void testRepositoryUpdatesIndustry() {
         Industry newIndustry = buildSampleIndustry("Industry");
         newIndustry = entityManager.merge(newIndustry);
         newIndustry.setName("Updated Industry Name");
@@ -82,7 +82,7 @@ public class IndustryRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryFindsIndustryById() {
+    void testRepositoryFindsIndustryById() {
         Industry newIndustry = buildSampleIndustry("Industry 2");
         newIndustry = entityManager.merge(newIndustry);
         assertTrue(repository.findById(newIndustry.getId()).isPresent(),
@@ -92,7 +92,7 @@ public class IndustryRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryDeletesIndustryById() {
+    void testRepositoryDeletesIndustryById() {
         Industry newIndustry = buildSampleIndustry("Industry");
         newIndustry = entityManager.merge(newIndustry);
         repository.deleteById(newIndustry.getId());
@@ -103,7 +103,7 @@ public class IndustryRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryReturnsAllIndustries() {
+    void testRepositoryReturnsAllIndustries() {
         Industry newIndustry1 = buildSampleIndustry("Industry 1");
         Industry newIndustry2 = buildSampleIndustry("Industry 2");
         newIndustry1 = entityManager.merge(newIndustry1);

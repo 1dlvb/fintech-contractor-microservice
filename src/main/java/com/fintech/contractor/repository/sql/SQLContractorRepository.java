@@ -6,12 +6,16 @@ import com.fintech.contractor.dto.IndustryDTO;
 import com.fintech.contractor.dto.OrgFormDTO;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.util.WildcatEnhancer;
+import com.onedlvb.jwtlib.util.RolesEnum;
+import com.onedlvb.jwtlib.util.SecurityUtil;
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -24,7 +28,7 @@ public class SQLContractorRepository {
 
     @NonNull
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private static final String INITIAL_SQL =  "SELECT c.*, co.name as country_name, of.name as org_form_name, i.name as industry_name " +
+    private static final String INITIAL_SQL =  "SELECT c.*, co.id as country_id, of.name as org_form_name, i.name as industry_name " +
             "FROM contractor c " +
             "JOIN country co ON c.country = co.id " +
             "JOIN org_form of ON c.org_form = of.id " +
@@ -43,17 +47,31 @@ public class SQLContractorRepository {
         Integer offset = page * size;
 
         StringBuilder sqlBuilder = new StringBuilder(INITIAL_SQL);
+        List<ContractorDTO> listOfRoleBasedResults = roleBasedSqlBuilderUpdate(payload, sqlBuilder, params);
+        if (listOfRoleBasedResults != null) {
+            return listOfRoleBasedResults;
+        }
+
+        if (payload.isEmptyExceptCountry() && SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS)) {
+            if (payload.getCountry().equals("RUS")) {
+                sqlBuilder.append("AND co.id = 'RUS'");
+                params.addValue("co.id", "RUS");
+                return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
+            } else {
+                return Collections.emptyList();
+            }
+        }
 
         List<BiConsumer<SearchContractorPayload, MapSqlParameterSource>> filters = List.of(
-                (p, ps) -> addEqualCondition(p.id(), sqlBuilder, "c.id", ps),
-                (p, ps) -> addEqualCondition(p.parentId(), sqlBuilder, "c.parent_id", ps),
-                (p, ps) -> addLikeCondition(p.name(), sqlBuilder, "c.name", ps),
-                (p, ps) -> addLikeCondition(p.nameFull(), sqlBuilder, "c.name_full", ps),
-                (p, ps) -> addLikeCondition(p.inn(), sqlBuilder, "c.inn", ps),
-                (p, ps) -> addLikeCondition(p.ogrn(), sqlBuilder, "c.ogrn", ps),
-                (p, ps) -> addLikeCondition(p.country(), sqlBuilder, "co.name", ps),
-                (p, ps) -> addLikeCondition(p.orgForm(), sqlBuilder, "of.name", ps),
-                (p, ps) -> addIndustryCondition(p.industry(), sqlBuilder, ps)
+                (p, ps) -> addEqualCondition(p.getId(), sqlBuilder, "c.id", ps),
+                (p, ps) -> addEqualCondition(p.getParentId(), sqlBuilder, "c.parent_id", ps),
+                (p, ps) -> addLikeCondition(p.getName(), sqlBuilder, "c.name", ps),
+                (p, ps) -> addLikeCondition(p.getNameFull(), sqlBuilder, "c.name_full", ps),
+                (p, ps) -> addLikeCondition(p.getInn(), sqlBuilder, "c.inn", ps),
+                (p, ps) -> addLikeCondition(p.getOgrn(), sqlBuilder, "c.ogrn", ps),
+                (p, ps) -> addLikeCondition(p.getCountry(), sqlBuilder, "co.id", ps),
+                (p, ps) -> addLikeCondition(p.getOrgForm(), sqlBuilder, "of.name", ps),
+                (p, ps) -> addIndustryCondition(p.getIndustry(), sqlBuilder, ps)
         );
 
         for (BiConsumer<SearchContractorPayload, MapSqlParameterSource> filter : filters) {
@@ -65,6 +83,32 @@ public class SQLContractorRepository {
         params.addValue("offset", offset);
 
         return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
+    }
+
+    /**
+     * Updates the SQL query based on the user's role and search criteria.
+     * <p>If the user has the CONTRACTOR_RUS role and the payload is empty, appends a filter for
+     * a specific ID ('RUS') to the query and executes it.</p>
+     *
+     * <p>If the user has the CONTRACTOR_RUS role but the payload is not empty, returns an empty list.</p>
+     *
+     * <p>If the user does not have the CONTRACTOR_RUS role, returns null.</p>
+     *
+     * @param payload The search criteria used to build the query.
+     * @param sqlBuilder The {@code StringBuilder} for constructing the query.
+     * @param params The {@code MapSqlParameterSource} for query parameters.
+     * @return A list of {@link ContractorDTO} if the query is executed; otherwise, an empty list or {@code null}.
+     */
+    @Nullable
+    private List<ContractorDTO> roleBasedSqlBuilderUpdate(SearchContractorPayload payload, StringBuilder sqlBuilder, MapSqlParameterSource params) {
+        if (payload.isEmpty() && SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS)) {
+            sqlBuilder.append("AND co.id = 'RUS'");
+            params.addValue("co.id", "RUS");
+            return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
+        } else if (!payload.isEmpty() && SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS)) {
+            return Collections.emptyList();
+        }
+        return null;
     }
 
     /**
@@ -125,7 +169,7 @@ public class SQLContractorRepository {
      */
     private RowMapper<ContractorDTO> rowMapper() {
         return (rs, rowNum) -> {
-            CountryDTO countryDTO = new CountryDTO(rs.getString("country"), rs.getString("country_name"));
+            CountryDTO countryDTO = new CountryDTO(rs.getString("country"), rs.getString("country_id"));
             OrgFormDTO orgFormDTO = new OrgFormDTO(rs.getLong("org_form"), rs.getString("org_form_name"));
             IndustryDTO industryDTO = new IndustryDTO(rs.getLong("industry"), rs.getString("industry_name"));
 

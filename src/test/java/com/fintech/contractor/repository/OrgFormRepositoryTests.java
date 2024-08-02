@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Import(AppConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
-public class OrgFormRepositoryTests {
+class OrgFormRepositoryTests {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -59,7 +59,7 @@ public class OrgFormRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositorySavesOrgForm() {
+    void testRepositorySavesOrgForm() {
         OrgForm newOrgForm = buildSampleOrgForm("OrgForm 1");
         OrgForm savedOrgForm = repository.save(newOrgForm);
         assertEquals(savedOrgForm, entityManager.find(OrgForm.class, savedOrgForm.getId()),
@@ -69,7 +69,7 @@ public class OrgFormRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryUpdatesOrgForm() {
+    void testRepositoryUpdatesOrgForm() {
         OrgForm newOrgForm = buildSampleOrgForm("OrgForm");
         newOrgForm = entityManager.merge(newOrgForm);
         newOrgForm.setName("Updated OrgForm Name");
@@ -82,7 +82,7 @@ public class OrgFormRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryFindsOrgFormById() {
+    void testRepositoryFindsOrgFormById() {
         OrgForm newOrgForm = buildSampleOrgForm("OrgForm 2");
         newOrgForm = entityManager.merge(newOrgForm);
         assertTrue(repository.findById(newOrgForm.getId()).isPresent(),
@@ -92,7 +92,7 @@ public class OrgFormRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryDeletesOrgFormById() {
+    void testRepositoryDeletesOrgFormById() {
         OrgForm newOrgForm = buildSampleOrgForm("OrgForm");
         newOrgForm = entityManager.merge(newOrgForm);
         repository.deleteById(newOrgForm.getId());
@@ -103,7 +103,7 @@ public class OrgFormRepositoryTests {
     @Test
     @Transactional
     @DirtiesContext
-    public void testRepositoryReturnsAllIndustries() {
+    void testRepositoryReturnsAllIndustries() {
         OrgForm newOrgForm1 = buildSampleOrgForm("OrgForm 1");
         OrgForm newOrgForm2 = buildSampleOrgForm("OrgForm 2");
         newOrgForm1 = entityManager.merge(newOrgForm1);
