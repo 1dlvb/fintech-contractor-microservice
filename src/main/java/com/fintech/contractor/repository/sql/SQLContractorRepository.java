@@ -6,7 +6,7 @@ import com.fintech.contractor.dto.IndustryDTO;
 import com.fintech.contractor.dto.OrgFormDTO;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.util.WildcatEnhancer;
-import com.onedlvb.jwtlib.util.Roles;
+import com.onedlvb.jwtlib.util.RolesEnum;
 import com.onedlvb.jwtlib.util.SecurityUtil;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
@@ -52,7 +52,7 @@ public class SQLContractorRepository {
             return listOfRoleBasedResults;
         }
 
-        if (payload.isEmptyExceptCountry() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
+        if (payload.isEmptyExceptCountry() && SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS)) {
             if (payload.getCountry().equals("RUS")) {
                 sqlBuilder.append("AND co.id = 'RUS'");
                 params.addValue("co.id", "RUS");
@@ -101,11 +101,11 @@ public class SQLContractorRepository {
      */
     @Nullable
     private List<ContractorDTO> roleBasedSqlBuilderUpdate(SearchContractorPayload payload, StringBuilder sqlBuilder, MapSqlParameterSource params) {
-        if (payload.isEmpty() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
+        if (payload.isEmpty() && SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS)) {
             sqlBuilder.append("AND co.id = 'RUS'");
             params.addValue("co.id", "RUS");
             return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, rowMapper());
-        } else if (!payload.isEmpty() && SecurityUtil.hasRole(Roles.CONTRACTOR_RUS)) {
+        } else if (!payload.isEmpty() && SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS)) {
             return Collections.emptyList();
         }
         return null;

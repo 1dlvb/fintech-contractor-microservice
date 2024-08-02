@@ -6,7 +6,7 @@ import com.fintech.contractor.model.Industry;
 import com.fintech.contractor.model.OrgForm;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.util.WildcatEnhancer;
-import com.onedlvb.jwtlib.util.Roles;
+import com.onedlvb.jwtlib.util.RolesEnum;
 import com.onedlvb.jwtlib.util.SecurityUtil;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -114,8 +114,8 @@ public final class ContractorSpecification {
      * @return The modified payload or null based on the user's roles and payload content.
      */
     private static SearchContractorPayload roleBasedPayloadModification(SearchContractorPayload payload) {
-        boolean hasSuperuser = SecurityUtil.hasRole(Roles.SUPERUSER);
-        boolean hasContractorSuperuser = SecurityUtil.hasRole(Roles.CONTRACTOR_SUPERUSER);
+        boolean hasSuperuser = SecurityUtil.hasRole(RolesEnum.SUPERUSER);
+        boolean hasContractorSuperuser = SecurityUtil.hasRole(RolesEnum.CONTRACTOR_SUPERUSER);
 
         if (hasSuperuser || hasContractorSuperuser) {
             return payload;
@@ -127,7 +127,7 @@ public final class ContractorSpecification {
         if (!payload.isEmptyExceptCountry()) {
             return null;
         }
-        boolean hasContractorRus = SecurityUtil.hasRole(Roles.CONTRACTOR_RUS);
+        boolean hasContractorRus = SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS);
 
         return handleNonEmptyPayload(payload, hasContractorRus);
     }
@@ -139,7 +139,7 @@ public final class ContractorSpecification {
      * @return The modified payload or null if the user has no relevant roles.
      */
     private static SearchContractorPayload handleEmptyPayload() {
-        boolean hasContractorRusRole = SecurityUtil.hasRole(Roles.CONTRACTOR_RUS);
+        boolean hasContractorRusRole = SecurityUtil.hasRole(RolesEnum.CONTRACTOR_RUS);
 
         String country = null;
         if (hasContractorRusRole) {
