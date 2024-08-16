@@ -31,8 +31,28 @@
       "description": "Description for jwt-lib-spring-boot-starter.algorithm."
     },
     {
-        "name": "audit-lib-spring-boot-starter.kafka-transactional-id",
+      "name": "audit-lib-spring-boot-starter.kafka-transactional-id",
       "type": "java.lang.String",
       "description": "Description for audit-lib-spring-boot-starter.kafka-transactional-id."
+    },
+    {
+      "name": "rabbitmq.queue.name",
+      "type": "java.lang.String",
+      "description": "Description for rabbitmq.queue.name."
+    },
+    {
+      "name": "rabbitmq.caching-connection-factory.uri",
+      "type": "java.lang.String",
+      "description": "Description for rabbitmq.caching-connection-factory.uri."
+    },
+    {
+      "name": "contractor.exchange.name",
+      "type": "java.lang.String",
+      "description": "Description for contractor.exchange.name."
+    },
+    {
+      "name": "rabbitmq.dead-letter.queue",
+      "type": "java.lang.String",
+      "description": "Description for rabbitmq.dead-letter.queue."
     }
   ] }
