@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -101,14 +102,14 @@ public class ContractorServiceImpl implements ContractorService {
         }
     }
 
-        @Override
-        @AuditLog(logLevel = LogLevel.INFO)
-        public ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO) {
-            Optional<Contractor> optional = contractorRepository.findById(mainBorrowerDTO.getContractorId());
-            Contractor contractor = optional.orElse(null);
-            contractor.setActiveMainBorrower(mainBorrowerDTO.isHasMainDeals());
-            return modelMapper.map(contractorRepository.save(contractor), ContractorWithMainBorrowerDTO.class);
-        }
+    @Override
+    @AuditLog(logLevel = LogLevel.INFO)
+    public ContractorWithMainBorrowerDTO updateMainBorrower(MainBorrowerDTO mainBorrowerDTO) {
+        Optional<Contractor> optional = contractorRepository.findById(mainBorrowerDTO.getContractorId());
+        Contractor contractor = optional.orElse(null);
+        Objects.requireNonNull(contractor).setActiveMainBorrower(mainBorrowerDTO.isHasMainDeals());
+        return modelMapper.map(contractorRepository.save(contractor), ContractorWithMainBorrowerDTO.class);
+    }
 
     /**
      * Updates the properties of an existing contractor entity with new data.
