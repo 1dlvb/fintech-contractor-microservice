@@ -14,8 +14,11 @@ public class MessageSenderServiceImpl implements MessageSenderService {
     private AmqpTemplate amqpTemplate;
 
     @Override
-    public void send(String exchange, String routingKey, String message) {
-        amqpTemplate.convertAndSend(exchange, routingKey, message);
+    public void send(String exchange, String routingKey, String content) {
+        amqpTemplate.convertAndSend(exchange, routingKey, content, message -> {
+            message.getMessageProperties().setHeader("timestamp", System.currentTimeMillis());
+            return message;
+        });
     }
 
 }
