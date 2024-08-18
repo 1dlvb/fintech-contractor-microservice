@@ -34,17 +34,25 @@ public class RabbitMqConfig {
     @Value("${rabbitmq.dead-letter.routing.key}")
     private String deadLetterRoutingKey;
 
+    @Value("${rabbitmq.dead-letter.message.ttl}")
+    private long deadLetterMessageTTL;
+
     @Bean
     public Queue dealsContractorQueue() {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("x-dead-letter-exchange", deadLetterExchange);
         arguments.put("x-dead-letter-routing-key", deadLetterRoutingKey);
+
         return new Queue(dealsContractorQueue, true, false, false, arguments);
     }
 
     @Bean
     public Queue deadLetterQueue() {
-        return new Queue(deadLetterQueue, true);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("x-message-ttl", deadLetterMessageTTL);
+        arguments.put("x-dead-letter-exchange", contractorExchange);
+
+        return new Queue(deadLetterQueue, true, false, false, arguments);
     }
 
     @Bean
@@ -58,17 +66,17 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Binding binding(Queue dealsContractorQueue, Exchange contractorExchange) {
-        return BindingBuilder.bind(dealsContractorQueue)
-                .to(contractorExchange)
+    public Binding binding() {
+        return BindingBuilder.bind(dealsContractorQueue())
+                .to(contractorExchange())
                 .with(routingKey)
                 .noargs();
     }
 
     @Bean
-    public Binding deadLetterBinding(Queue deadLetterQueue, DirectExchange deadLetterExchange) {
-        return BindingBuilder.bind(deadLetterQueue)
-                .to(deadLetterExchange)
+    public Binding deadLetterBinding() {
+        return BindingBuilder.bind(deadLetterQueue())
+                .to(deadLetterExchange())
                 .with(deadLetterRoutingKey);
     }
 
