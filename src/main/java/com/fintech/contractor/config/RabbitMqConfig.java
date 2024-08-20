@@ -37,6 +37,10 @@ public class RabbitMqConfig {
     @Value("${rabbitmq.dead-letter.message.ttl}")
     private long deadLetterMessageTTL;
 
+
+    @Value("${rabbitmq.queue.name}")
+    private String queueActiveMainBorrowerQueueName;
+
     @Bean
     public Queue dealsContractorQueue() {
         Map<String, Object> arguments = new HashMap<>();
@@ -44,6 +48,11 @@ public class RabbitMqConfig {
         arguments.put("x-dead-letter-routing-key", deadLetterRoutingKey);
 
         return new Queue(dealsContractorQueue, true, false, false, arguments);
+    }
+
+    @Bean
+    public Queue activeMainBorrowerQueue() {
+        return new Queue(queueActiveMainBorrowerQueueName, true);
     }
 
     @Bean
