@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+/**
+ * An implementation of {@link MessageReceiverService} interface
+ * @author Matushkin Anton
+ */
 @Service
 @RequiredArgsConstructor
 public class MessageReceiverServiceImpl implements MessageReceiverService {

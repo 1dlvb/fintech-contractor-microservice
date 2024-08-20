@@ -13,6 +13,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Configuration class for setting up RabbitMQ exchanges, queues, and bindings.
+ * <p>
+ * This configuration class defines the necessary beans. Such as exchanges,
+ * queues, and bindings, dead-letter queues and message TTL
+ * settings to handle message routing and expiration.
+ * </p>
+ * @author Matushkin Anton
+ */
 @Configuration
 public class RabbitMqConfig {
 
@@ -41,6 +51,11 @@ public class RabbitMqConfig {
     @Value("${rabbitmq.queue.name}")
     private String queueActiveMainBorrowerQueueName;
 
+    /**
+     * Defines a queue for contractor deals with dead-letter exchange settings.
+     * <p>
+     * @return the configured {@link Queue} for contractor deals.
+     */
     @Bean
     public Queue dealsContractorQueue() {
         Map<String, Object> arguments = new HashMap<>();
@@ -50,11 +65,23 @@ public class RabbitMqConfig {
         return new Queue(dealsContractorQueue, true, false, false, arguments);
     }
 
+    /**
+     * Defines a queue for active main borrowers.
+     * <p>
+     * @return the configured {@link Queue} for active main borrowers.
+     */
     @Bean
     public Queue activeMainBorrowerQueue() {
         return new Queue(queueActiveMainBorrowerQueueName, true);
     }
 
+    /**
+     * Defines a dead-letter queue with message TTL settings.
+     * <p>
+     * For messages that expire or fail to process are redirected to this queue.
+     * </p>
+     * @return the configured {@link Queue} for dead letters.
+     */
     @Bean
     public Queue deadLetterQueue() {
         Map<String, Object> arguments = new HashMap<>();
@@ -64,24 +91,48 @@ public class RabbitMqConfig {
         return new Queue(deadLetterQueue, true, false, false, arguments);
     }
 
+    /**
+     * Defines a topic exchange for contractor-related messages.
+     * <p>
+     * @return the configured {@link Exchange} for contractor-related messages.
+     */
     @Bean
     public Exchange contractorExchange() {
         return new TopicExchange(contractorExchange);
     }
 
+    /**
+     * Defines a direct exchange for dead-letter messages.
+     * <p>
+     * @return the configured {@link DirectExchange} for dead-letter messages.
+     */
     @Bean
     public DirectExchange deadLetterExchange() {
         return new DirectExchange(deadLetterExchange);
     }
 
+    /**
+     * Defines a binding between the contractor deals queue and the contractor exchange.
+     * <p>
+     * This binding specifies the routing key used to route messages to the contractor deals queue.
+     * </p>
+     * @return the configured {@link Binding} between the contractor deals queue and the contractor exchange.
+     */
     @Bean
-    public Binding binding() {
+    public Binding contractorBinding() {
         return BindingBuilder.bind(dealsContractorQueue())
                 .to(contractorExchange())
                 .with(routingKey)
                 .noargs();
     }
 
+    /**
+     * Defines a binding between the dead-letter queue and the dead-letter exchange.
+     * <p>
+     * This binding specifies the routing key used to route messages to the dead-letter queue.
+     * </p>
+     * @return the configured {@link Binding} between the dead-letter queue and the dead-letter exchange.
+     */
     @Bean
     public Binding deadLetterBinding() {
         return BindingBuilder.bind(deadLetterQueue())

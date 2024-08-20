@@ -6,6 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * An implementation of {@link MessageSenderService} interface
+ * @author Matushkin Anton
+ */
 @Service
 @RequiredArgsConstructor
 public class MessageSenderServiceImpl implements MessageSenderService {
