@@ -1,11 +1,14 @@
 package com.fintech.contractor.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fintech.contractor.dto.ContractorDTO;
 import com.fintech.contractor.dto.ContractorWithMainBorrowerDTO;
 import com.fintech.contractor.dto.MainBorrowerDTO;
 import com.fintech.contractor.exception.NotActiveException;
 import com.fintech.contractor.payload.SearchContractorPayload;
 import com.fintech.contractor.service.ContractorService;
+import com.fintech.contractor.service.MessageSenderService;
 import com.onedlvb.advice.LogLevel;
 import com.onedlvb.advice.annotation.AuditLogHttp;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +52,20 @@ public class ContractorController {
     @NonNull
     private final ContractorService contractorService;
 
+    @NonNull
+    private final MessageSenderService messageSenderService;
+
+    @NonNull
+    private final ObjectMapper objectMapper;
+
+    @Value("${contractor.exchange.name}")
+    private String contractorExchange;
+
+    @Value("${contractor.deals.routing.key}")
+    private String routingKey;
+
+
+
     /**
      * Saves or updates a contractor.
      * @param contractorDTO the contractor details to save or update.
@@ -62,7 +80,15 @@ public class ContractorController {
     public ResponseEntity<ContractorDTO> saveOrUpdateContractor(
             @RequestBody @Parameter(description = "Contractor details") ContractorDTO contractorDTO) {
         ContractorDTO savedContractorDTO = contractorService.saveOrUpdateContractor(contractorDTO);
-        return ResponseEntity.ok(savedContractorDTO);
+
+        try {
+            String contractorJson = objectMapper.writeValueAsString(savedContractorDTO);
+            messageSenderService.send(contractorExchange, routingKey, contractorJson);
+            return ResponseEntity.ok(savedContractorDTO);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 
     /**
